@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
     # Ваши приложения (будут созданы позже)
     'users.apps.UsersConfig',
-    # 'products.apps.ProductsConfig',
+    'products.apps.ProductsConfig',
     # 'cart.apps.CartConfig',
     # 'orders.apps.OrdersConfig',
     # 'reviews.apps.ReviewsConfig',
