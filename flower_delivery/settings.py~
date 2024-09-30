@@ -103,12 +103,6 @@ DATABASES = {
     }
 }
 
-# Django Allauth Settings
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # 'none', 'mandatory', 'optional'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
 
 
 # Password validation
@@ -148,6 +142,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
@@ -162,4 +157,11 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
+
+# Django Allauth Settings
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # 'none', 'mandatory', 'optional'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
