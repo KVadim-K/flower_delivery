@@ -47,6 +47,10 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
+    # Другие сторонние приложения (например, для аналитики)
+    'rest_framework',
+    'rest_framework.authtoken',
+
     # Ваши приложения (будут созданы позже)
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
@@ -55,7 +59,6 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'reports.apps.ReportsConfig',
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -100,12 +103,6 @@ DATABASES = {
     }
 }
 
-# Django Allauth Settings
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # 'none', 'mandatory', 'optional'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
 
 
 # Password validation
@@ -159,4 +156,11 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 1
+
+# Django Allauth Settings
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # 'none', 'mandatory', 'optional'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 

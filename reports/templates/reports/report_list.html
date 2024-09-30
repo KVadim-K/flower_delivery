@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Отчёты{% endblock %}
+
+{% block content %}
+<h1>Отчёты по Заказам</h1>
+{% if reports %}
+    <ul>
+        {% for report in reports %}
+            <li>
+                {{ report.report_date }} - Продажи: {{ report.sales }} ₽ - Прибыль: {{ report.profit }} ₽ - Расходы: {{ report.expenses }} ₽
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Нет доступных отчётов.</p>
+{% endif %}
+{% endblock %}

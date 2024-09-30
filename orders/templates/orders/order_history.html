@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}История Заказов{% endblock %}
+
+{% block content %}
+<h1>История Ваших Заказов</h1>
+{% if orders %}
+    <ul>
+        {% for order in orders %}
+            <li>
+                Заказ №{{ order.id }} - {{ order.get_status_display }} - {{ order.created_at }}
+                <ul>
+                    {% for item in order.items.all %}
+                        <li>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} ₽</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>У вас ещё нет заказов.</p>
+{% endif %}
+{% endblock %}

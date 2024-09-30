@@ -47,15 +47,18 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
 
+    # Другие сторонние приложения (например, для аналитики)
+    'rest_framework',
+    'rest_framework.authtoken',
+
     # Ваши приложения (будут созданы позже)
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
     'reviews.apps.ReviewsConfig',
-    # 'reports.apps.ReportsConfig',
+    'reports.apps.ReportsConfig',
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
