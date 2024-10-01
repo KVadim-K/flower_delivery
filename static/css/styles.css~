@@ -52,30 +52,3 @@ footer {
     border-bottom: 1px solid #ddd;
     margin-bottom: 10px;
 }
-
-/* Отзывы */
-.review-list {
-    list-style-type: none;
-    padding: 0;
-}
-
-.review-item {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-.review-item strong {
-    color: #333;
-}
-
-.review-item p {
-    margin: 5px 0;
-}
-
-.average-rating {
-    font-size: 1.2em;
-    color: #f39c12; /* Золотистый цвет для рейтинга */
-}
