@@ -23,3 +23,13 @@ def remove_from_cart(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
     cart_item.delete()
     return redirect('cart:cart_detail')
+
+@login_required
+def update_cart(request):
+    cart = Cart.objects.get(user=request.user)
+    for item in cart.items.all():
+        quantity = request.POST.get(f'quantity_{item.id}')
+        if quantity:
+            item.quantity = int(quantity)
+            item.save()
+    return redirect('cart:cart_detail')

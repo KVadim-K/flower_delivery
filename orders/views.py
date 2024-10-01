@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from cart.models import Cart, CartItem
 from .models import Order
@@ -27,3 +27,14 @@ def create_order(request):
 def order_history(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'orders/order_history.html', {'orders': orders})
+
+@login_required
+def reorder(request, order_id):
+    original_order = get_object_or_404(Order, id=order_id, user=request.user)
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    for item in original_order.items.all():
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=item.product)
+        if not created:
+            cart_item.quantity += item.quantity
+            cart_item.save()
+    return redirect('cart:cart_detail')

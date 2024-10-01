@@ -5,16 +5,21 @@
 {% block content %}
 <h1>Ваша Корзина</h1>
 {% if cart.items.all %}
-    <ul>
-        {% for item in cart.items.all %}
-            <li>
-                {{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} ₽
-                <a href="{% url 'cart:remove_from_cart' item.id %}">Удалить</a>
-            </li>
-        {% endfor %}
-    </ul>
-    <p>Общая сумма: {{ cart.get_total_price }} ₽</p>
-    <a href="{% url 'orders:create_order' %}">Оформить заказ</a>
+    <form action="{% url 'cart:update_cart' %}" method="post">
+        {% csrf_token %}
+        <ul>
+            {% for item in cart.items.all %}
+                <li>
+                    {{ item.product.name }} -
+                    <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="1">
+                    <a href="{% url 'cart:remove_from_cart' item.id %}">Удалить</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <p>Общая сумма: {{ cart.get_total_price }} ₽</p>
+        <button type="submit">Обновить Корзину</button>
+    </form>
+    <a href="{% url 'orders:create_order' %}">Оформить Заказ</a>
 {% else %}
     <p>Ваша корзина пуста.</p>
 {% endif %}

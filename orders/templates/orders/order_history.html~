@@ -14,9 +14,8 @@
                         <li>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} ₽</li>
                     {% endfor %}
                 </ul>
-                <a href="{% url 'orders:reorder' order.id %}">Повторить Заказ</a>
             </li>
-{% endfor %}
+        {% endfor %}
     </ul>
 {% else %}
     <p>У вас ещё нет заказов.</p>

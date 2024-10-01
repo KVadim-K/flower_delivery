@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<h1>Ваша Корзина</h1>
+{% if cart.items.all %}
+    <ul>
+        {% for item in cart.items.all %}
+            <li>
+                {{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} ₽
+                <a href="{% url 'cart:remove_from_cart' item.id %}">Удалить</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <p>Общая сумма: {{ cart.get_total_price }} ₽</p>
+    <a href="{% url 'orders:create_order' %}">Оформить заказ</a>
+{% else %}
+    <p>Ваша корзина пуста.</p>
+{% endif %}
+{% endblock %}

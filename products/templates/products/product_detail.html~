@@ -39,11 +39,11 @@
             <li>
                 <strong>{{ review.user.username }}</strong> - {{ review.rating }}/5
                 <p>{{ review.comment }}</p>
-                <p><em>{{ review.created_at }}</em></p>
             </li>
         {% endfor %}
     </ul>
 {% else %}
     <p>Нет отзывов.</p>
 {% endif %}
+
 {% endblock %}

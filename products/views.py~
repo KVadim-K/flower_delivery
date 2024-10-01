@@ -1,3 +1,26 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from .models import Product
+from reviews.models import Review
+from django.db.models import Avg
 
-# Create your views here.
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'products/product_list.html', {'products': products})
+
+
+def product_detail(request, pk):
+    # Получаем продукт по его id
+    product = get_object_or_404(Product, pk=pk)
+
+    # Получаем все отзывы, связанные с текущим продуктом.
+    reviews = Review.objects.filter(product=product)
+
+    # Подсчет среднего рейтинга
+    average_rating = reviews.aggregate(avg_rating=Avg('rating'))['avg_rating']
+
+    return render(request, 'products/product_detail.html', {
+        'product': product,
+        'reviews': reviews,
+        'average_rating': average_rating,
+    })
+

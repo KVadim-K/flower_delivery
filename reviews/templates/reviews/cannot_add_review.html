@@ -1,0 +1,10 @@
+<!-- reviews/templates/reviews/cannot_add_review.html -->
+{% extends "base.html" %}
+
+{% block title %}Невозможно Оставить Отзыв{% endblock %}
+
+{% block content %}
+<h2>Невозможно Оставить Отзыв</h2>
+<p>Вы не можете оставить отзыв на {{ product.name }}, так как вы его не заказывали.</p>
+<p><a href="{% url 'products:product_detail' product.id %}">Вернуться к продукту</a></p>
+{% endblock %}
