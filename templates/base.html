@@ -12,6 +12,8 @@
             <a href="{% url 'home' %}">Главная</a>
             <a href="{% url 'products:product_list' %}">Каталог</a>
             {% if user.is_authenticated %}
+                <!-- Отображение имени текущего пользователя -->
+                <p>Привет, {{ user.username }}!</p>
                 <a href="{% url 'cart:cart_detail' %}">Корзина</a>
                 <a href="{% url 'orders:order_history' %}">Мои заказы</a>
                 <a href="{% url 'account_logout' %}">Выйти</a>

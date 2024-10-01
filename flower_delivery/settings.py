@@ -166,3 +166,12 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # 'none', 'mandatory', 'optional'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.example.com'  # Замените на SMTP-сервер вашего почтового провайдера
+# EMAIL_PORT = 587  # Порт для TLS
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your_email@example.com'  # Замените на ваш email
+# EMAIL_HOST_PASSWORD = 'your_email_password'  # Замените на ваш пароль
+# DEFAULT_FROM_EMAIL = 'your_email@example.com'
