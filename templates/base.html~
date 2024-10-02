@@ -5,29 +5,58 @@
     <meta charset="UTF-8">
     <title>{% block title %}FlowerDelivery{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Подключение Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Подключение Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Мета-теги для адаптивности -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="{% url 'home' %}">Главная</a>
-            <a href="{% url 'products:product_list' %}">Каталог</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'cart:cart_detail' %}">Корзина</a>
-                <a href="{% url 'orders:order_history' %}">Мои заказы</a>
-                <a href="{% url 'account_logout' %}">Выйти</a>
-            {% else %}
-                <a href="{% url 'account_login' %}">Войти</a>
-                <a href="{% url 'account_signup' %}">Регистрация</a>
-            {% endif %}
+    <header class="header">
+        <nav class="navbar">
+            <div class="navbar__logo">
+                <a href="{% url 'home' %}">FlowerDelivery</a>
+            </div>
+            <ul class="navbar__links" id="navbar-links">
+                <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Главная</a></li>
+                <li><a href="{% url 'products:product_list' %}"><i class="fas fa-seedling"></i> Каталог</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'cart:cart_detail' %}"><i class="fas fa-shopping-cart"></i> Корзина</a></li>
+                    <li><a href="{% url 'orders:order_history' %}"><i class="fas fa-box"></i> Мои заказы</a></li>
+                    <li><a href="{% url 'account_logout' %}"><i class="fas fa-sign-out-alt"></i> Выйти</a></li>
+                    <li class="navbar__greeting">Привет, {{ user.username }}!</li>
+                {% else %}
+                    <li><a href="{% url 'account_login' %}"><i class="fas fa-sign-in-alt"></i> Войти</a></li>
+                    <li><a href="{% url 'account_signup' %}"><i class="fas fa-user-plus"></i> Регистрация</a></li>
+                {% endif %}
+            </ul>
+            <div class="navbar__toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
         </nav>
     </header>
-    <hr>
-    <main>
+
+    <main class="main-content">
         {% block content %}
+        <!-- Основной контент страницы -->
         {% endblock %}
     </main>
-    <footer>
-        <p>&copy; 2024 FlowerDelivery</p>
+
+    <footer class="footer">
+        <div class="footer__content">
+            <p>&copy; 2024 FlowerDelivery. Все права защищены.</p>
+            <div class="footer__social">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-vk"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+            </div>
+        </div>
     </footer>
+
+    <!-- Подключение JavaScript -->
+    <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>
