@@ -41,7 +41,12 @@ def create_order(request):
 
 @login_required
 def order_history(request):
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    orders = Order.objects.filter(user=request.user).prefetch_related('order_items')
+    for order in orders:
+        total_price = 0
+        for item in order.order_items.all():
+            total_price += item.quantity * item.product.price
+        order.total_price = total_price  # Добавляем атрибут для отображения в шаблоне
     return render(request, 'orders/order_history.html', {'orders': orders})
 
 
@@ -49,36 +54,37 @@ def order_history(request):
 def reorder(request, order_id):
     original_order = get_object_or_404(Order, id=order_id, user=request.user)
 
-    # Проверяем, есть ли товары в исходном заказе
-    if not original_order.items.exists():
+    # Проверяем, есть ли товары в заказе
+    if not original_order.order_items.exists():
         print("Исходный заказ не содержит товаров.")
-        return redirect('orders:order_history')  # Если товаров нет, перенаправляем назад
+        return redirect('orders:order_history')
 
     # Получаем или создаём корзину пользователя
     cart, created = Cart.objects.get_or_create(user=request.user)
 
     # Переносим товары из заказа в корзину
-    for item in original_order.items.all():
-        # Проверяем, что товар существует
-        if not item.product:
-            print(f"Товар не найден: {item.product}")
-            continue
-
-        # Выводим информацию о товаре для отладки
-        print(f"Добавляем товар: {item.product.name}, количество: {item.quantity}")
-
-        # Получаем или создаем элемент корзины
+    for item in original_order.order_items.all():
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=item.product)
         if created:
-            cart_item.quantity = item.quantity  # Если товар новый, устанавливаем количество
+            cart_item.quantity = item.quantity  # Если товар новый, добавляем количество
         else:
-            cart_item.quantity += item.quantity  # Если товар уже в корзине, увеличиваем количество
-
-        cart_item.save()  # Сохраняем изменения
-        print(f"Товар {cart_item.product.name} добавлен в корзину с количеством: {cart_item.quantity}")
+            cart_item.quantity += item.quantity  # Если товар уже есть, увеличиваем количество
+        cart_item.save()
 
     # Перенаправляем пользователя на страницу корзины
     return redirect('cart:cart_detail')
+
+@login_required
+def update_cart(request):
+    cart = Cart.objects.get(user=request.user)
+    for item in cart.items.all():
+        quantity = request.POST.get(f'quantity_{item.id}')
+        if quantity:
+            item.quantity = int(quantity)
+            item.save()
+
+    return redirect('cart:cart_detail')
+
 
 
 

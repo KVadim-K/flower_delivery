@@ -40,6 +40,15 @@
     </header>
 
     <main class="main-content">
+        <!-- Блок для отображения сообщений -->
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
         {% block content %}
         <!-- Основной контент страницы -->
         {% endblock %}
@@ -55,8 +64,5 @@
             </div>
         </div>
     </footer>
-
-    <!-- Подключение JavaScript -->
-    <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>

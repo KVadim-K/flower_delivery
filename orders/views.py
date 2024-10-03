@@ -41,7 +41,15 @@ def create_order(request):
 
 @login_required
 def order_history(request):
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    # Сортируем заказы по дате создания в убывающем порядке
+    orders = Order.objects.filter(user=request.user).prefetch_related('order_items').order_by('-created_at')
+
+    for order in orders:
+        total_price = 0
+        for item in order.order_items.all():
+            total_price += item.quantity * item.product.price
+        order.total_price = total_price  # Добавляем атрибут для отображения в шаблоне
+
     return render(request, 'orders/order_history.html', {'orders': orders})
 
 
@@ -68,6 +76,18 @@ def reorder(request, order_id):
 
     # Перенаправляем пользователя на страницу корзины
     return redirect('cart:cart_detail')
+
+@login_required
+def update_cart(request):
+    cart = Cart.objects.get(user=request.user)
+    for item in cart.items.all():
+        quantity = request.POST.get(f'quantity_{item.id}')
+        if quantity:
+            item.quantity = int(quantity)
+            item.save()
+
+    return redirect('cart:cart_detail')
+
 
 
 

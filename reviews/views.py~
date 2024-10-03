@@ -4,7 +4,12 @@ from products.models import Product
 from .models import Review
 from .forms import ReviewForm
 from orders.models import Order
+from django.contrib import messages  # Импортируем сообщения
 
+# Проверка Заказов: Функция has_ordered проверяет, есть ли у пользователя заказ, содержащий данный продукт.
+# Отображение Сообщения: Если пользователь не заказывал продукт, отображается соответствующее сообщение.
+# Ограничение на Однократный Отзыв: Проверяем, не оставлял ли пользователь уже отзыв на этот продукт.
+# Если да, добавляем ошибку в форму.
 
 @login_required
 def add_review(request, product_id):
@@ -13,25 +18,28 @@ def add_review(request, product_id):
     # Проверяем, сделал ли пользователь заказ на этот продукт
     has_ordered = Order.objects.filter(
         user=request.user,
-        items__product=product
+        order_items__product=product  # Используем правильное имя поля
     ).exists()
 
     if not has_ordered:
         return render(request, 'reviews/cannot_add_review.html', {'product': product})
 
+    # Проверяем, не оставлял ли пользователь уже отзыв на этот продукт
+    existing_review = Review.objects.filter(user=request.user, product=product).first()
+    if existing_review:
+        messages.error(request, "Вы уже оставили отзыв на этот продукт.")
+        return redirect('products:product_detail', pk=product.id)  # Исправленный параметр pk
+
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
-            # Проверяем, не оставлял ли пользователь уже отзыв на этот продукт
-            existing_review = Review.objects.filter(user=request.user, product=product).first()
-            if existing_review:
-                form.add_error(None, "Вы уже оставили отзыв на этот продукт.")
-            else:
-                review = form.save(commit=False)
-                review.user = request.user
-                review.product = product
-                review.save()
-                return redirect('products:product_detail', pk=product.id)
+            review = form.save(commit=False)
+            review.user = request.user
+            review.product = product
+            review.save()
+            messages.success(request, "Ваш отзыв был успешно добавлен.")
+            return redirect('products:product_detail', pk=product.id)  # Исправленный параметр pk
     else:
         form = ReviewForm()
+
     return render(request, 'reviews/add_review.html', {'form': form, 'product': product})

@@ -40,6 +40,17 @@
     </header>
 
     <main class="main-content">
+        <!-- Блок для отображения сообщений -->
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                        {{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         {% block content %}
         <!-- Основной контент страницы -->
         {% endblock %}
@@ -55,7 +66,5 @@
             </div>
         </div>
     </footer>
-
-
 </body>
 </html>

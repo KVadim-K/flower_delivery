@@ -1,24 +1,29 @@
 {% extends "base.html" %}
+{% load static %}
+{% load multiply %}
 
 {% block title %}История Заказов{% endblock %}
 
 {% block content %}
-<h1>История Ваших Заказов</h1>
-{% if orders %}
-    <ul>
+<link rel="stylesheet" href="{% static 'orders/styles.css' %}"> <!-- Подключаем файл стилей -->
+
+<div class="container">
+    <h1>История Ваших Заказов</h1>
+    {% if orders %}
         {% for order in orders %}
-            <li>
-                Заказ №{{ order.id }} - {{ order.get_status_display }} - {{ order.created_at }}
+            <div class="order-item">
+                <h3>Заказ №{{ order.id }} - {{ order.get_status_display }} - {{ order.created_at }}</h3>
                 <ul>
-                    {% for item in order.items.all %}
-                        <li>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} ₽</li>
+                    {% for item in order.order_items.all %}
+                        <li>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} ₽ = {{ item.quantity|multiply:item.product.price }} ₽</li>
                     {% endfor %}
                 </ul>
-                <a href="{% url 'orders:reorder' order.id %}">Повторить Заказ</a>
-            </li>
-{% endfor %}
-    </ul>
-{% else %}
-    <p>У вас ещё нет заказов.</p>
-{% endif %}
+                <p class="order-total">Общая сумма заказа: {{ order.total_price }} ₽</p>
+                <a href="{% url 'orders:reorder' order.id %}" class="btn">Повторить Заказ</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>У вас пока нет заказов.</p>
+    {% endif %}
+</div>
 {% endblock %}
