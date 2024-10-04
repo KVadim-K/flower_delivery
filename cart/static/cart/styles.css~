@@ -38,6 +38,12 @@
     border-bottom: none;
 }
 
+.cart-item ul li span {
+    font-weight: 500;
+    color: #666;
+}
+
+/* Сумма корзины */
 .cart-total {
     font-weight: bold;
     font-size: 20px;
@@ -46,6 +52,7 @@
     text-align: right;
 }
 
+/* Кнопки */
 .cart-item a.btn, .cart-item button {
     display: inline-block;
     background-color: #007bff;

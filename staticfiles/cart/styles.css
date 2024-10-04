@@ -10,16 +10,22 @@
 
 .cart-item {
     border: 1px solid #ddd;
-    padding: 15px;
+    padding: 20px;
     margin-bottom: 20px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.cart-item:hover {
+    transform: translateY(-5px);
 }
 
 .cart-item h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #333;
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #444;
 }
 
 .cart-item ul {
@@ -38,53 +44,66 @@
     border-bottom: none;
 }
 
+.cart-item ul li span {
+    font-weight: 500;
+    color: #666;
+}
+
+/* Сумма корзины */
 .cart-total {
     font-weight: bold;
-    font-size: 20px;
+    font-size: 22px;
     margin-top: 20px;
     color: #333;
     text-align: right;
 }
 
+/* Кнопки */
 .cart-item a.btn, .cart-item button {
     display: inline-block;
     background-color: #007bff;
     color: white;
-    padding: 10px;
+    padding: 12px 20px;
     text-decoration: none;
     border-radius: 5px;
-    margin-top: 10px;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
+    margin-top: 15px;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: none;
 }
 
 .cart-item a.btn:hover, .cart-item button:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.cart-item a.btn:active, .cart-item button:active {
+    transform: translateY(0);
 }
 
 /* Кнопка удаления */
 .cart-item a.btn-delete {
     background-color: #dc3545;
-    padding: 10px;
-    border-radius: 5px;
 }
 
 .cart-item a.btn-delete:hover {
     background-color: #c82333;
 }
 
-/* Кнопка "Оформить заказ" */
+/* Выделение кнопки "Оформить заказ" */
 .checkout-btn {
     background-color: #28a745;
     color: white;
-    padding: 12px;
-    font-size: 16px;
+    padding: 15px 30px;
+    font-size: 18px;
     font-weight: bold;
-    border-radius: 5px;
+    border-radius: 8px;
     text-align: center;
     text-transform: uppercase;
-    transition: background-color 0.3s ease;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
     margin-top: 20px;
     display: block;
     width: 100%;
@@ -92,24 +111,9 @@
 
 .checkout-btn:hover {
     background-color: #218838;
+    transform: translateY(-3px);
 }
 
-/* Кнопка отмены */
-.cancel-btn {
-    background-color: #6c757d;
-    color: white;
-    padding: 12px;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
-    display: block;
-    width: 100%;
-}
-
-.cancel-btn:hover {
-    background-color: #5a6268;
+.checkout-btn:active {
+    transform: translateY(0);
 }
