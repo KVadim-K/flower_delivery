@@ -1,61 +1,75 @@
-/* Общие стили для страницы */
-.container {
+/* Стили для оформления заказа */
+.order-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-}
-
-/* Стиль для каждого заказа */
-.order-item {
-    border: 1px solid #ccc;
-    padding: 15px;
-    margin-bottom: 20px;
-    background-color: #f9f9f9;
+    background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Стиль для заголовков заказов */
-.order-item h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
+.order-container h1 {
+    font-size: 24px;
     color: #333;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-/* Список товаров в заказе */
-.order-item ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.order-item ul li {
-    padding: 5px 0;
+.order-item {
+    padding: 15px;
     border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.order-item ul li:last-child {
+.order-item:last-child {
     border-bottom: none;
 }
 
-/* Сумма заказа */
-.order-total {
+.order-summary {
+    margin-top: 20px;
+    font-size: 18px;
     font-weight: bold;
-    margin-top: 10px;
-    color: #333;
+    color: #555;
+    text-align: right;
 }
 
-/* Кнопка "Повторить заказ" */
-.order-item a.btn {
-    display: inline-block;
+/* Кнопки оформления и отмены заказа */
+.checkout-btn {
+    display: block;
+    width: 80%; /* Кнопка занимает 80% ширины контейнера */
+    margin: 20px auto; /* Центрирование кнопки */
     background-color: #28a745;
     color: white;
-    padding: 10px 15px;
+    padding: 12px;
+    text-align: center;
     text-decoration: none;
     border-radius: 5px;
-    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
-.order-item a.btn:hover {
+.checkout-btn:hover {
     background-color: #218838;
+}
+
+.cancel-btn {
+    display: block;
+    width: 60%; /* Кнопка занимает 60% ширины контейнера */
+    margin: 10px auto; /* Центрирование кнопки */
+    background-color: #6c757d;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
 }
