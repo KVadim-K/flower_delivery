@@ -1,106 +1,61 @@
-/* Стили для оформления заказа */
-.order-container {
-    /* Максимальная ширина контейнера и его позиционирование */
+/* Общие стили для страницы */
+.container {
     max-width: 800px;
-    margin: 0 auto; /* Центрирование контейнера на странице */
+    margin: 0 auto;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 8px; /* Закругленные углы для более мягкого вида */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Тень для создания глубины */
-    transition: box-shadow 0.3s ease;
 }
 
-.order-container:hover {
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Тень при наведении */
-}
-
-.order-container h1 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-    text-align: center; /* Центрирование заголовка */
-    line-height: 1.4; /* Улучшенная читаемость */
-}
-
+/* Стиль для каждого заказа */
 .order-item {
+    border: 1px solid #ccc;
     padding: 15px;
-    margin-bottom: 15px; /* Отступ между элементами */
-    border-bottom: 1px solid #eee; /* Разделительная линия между элементами заказа */
-    display: flex;
-    justify-content: space-between; /* Пространственное распределение между названием и ценой товара */
-    align-items: center; /* Вертикальное выравнивание элементов по центру */
-    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.order-item:hover {
-    transform: translateY(-5px); /* Легкий подъем при наведении */
-}
-
-.order-item:last-child {
-    border-bottom: none; /* Убираем нижнюю границу для последнего элемента */
-}
-
+/* Стиль для заголовков заказов */
 .order-item h3 {
     font-size: 18px;
-    color: #333; /* Основной цвет текста для элементов заказа */
-    line-height: 1.3; /* Улучшенная читаемость */
+    margin-bottom: 10px;
+    color: #333;
 }
 
-.order-summary {
-    margin-top: 20px;
-    font-size: 18px;
-    font-weight: bold; /* Подчеркивание важности итоговой суммы заказа */
-    color: #555;
-    text-align: right; /* Выравнивание суммы по правому краю */
+/* Список товаров в заказе */
+.order-item ul {
+    list-style-type: none;
+    padding: 0;
 }
 
-.checkout-btn {
-    display: block;
-    width: 100%; /* Кнопка занимает всю ширину контейнера */
-    background-color: #28a745; /* Основной зеленый цвет для кнопки оформления */
-    color: white;
-    padding: 15px;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 8px; /* Закругленные углы для кнопки */
-    font-size: 18px;
+.order-item ul li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.order-item ul li:last-child {
+    border-bottom: none;
+}
+
+/* Сумма заказа */
+.order-total {
     font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Плавное изменение цвета при наведении */
-    margin-top: 20px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Тень для создания эффекта приподнятости */
-}
-
-.checkout-btn:hover {
-    background-color: #218838; /* Темно-зеленый цвет при наведении для интерактивности */
-    transform: translateY(-3px); /* Легкий подъем при наведении */
-}
-
-.checkout-btn:active {
-    transform: translateY(0); /* Эффект нажатия */
-}
-
-/* Кнопка отмены */
-.cancel-btn {
-    display: block;
-    width: 100%; /* Кнопка занимает всю ширину контейнера */
-    background-color: #dc3545; /* Красный цвет для кнопки отмены */
-    color: white;
-    padding: 15px;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 8px; /* Закругленные углы для кнопки */
-    font-size: 18px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Плавное изменение цвета при наведении */
     margin-top: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Тень для создания эффекта приподнятости */
+    color: #333;
 }
 
-.cancel-btn:hover {
-    background-color: #c82333; /* Темно-красный цвет при наведении для интерактивности */
-    transform: translateY(-3px); /* Легкий подъем при наведении */
+/* Кнопка "Повторить заказ" */
+.order-item a.btn {
+    display: inline-block;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
 
-.cancel-btn:active {
-    transform: translateY(0); /* Эффект нажатия */
+.order-item a.btn:hover {
+    background-color: #218838;
 }
