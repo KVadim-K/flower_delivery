@@ -3,17 +3,15 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .cart-item {
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     padding: 15px;
     margin-bottom: 20px;
     background-color: #f9f9f9;
-    border-radius: 5px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .cart-item h3 {
@@ -28,88 +26,35 @@
 }
 
 .cart-item ul li {
-    padding: 8px 0;
-    border-bottom: 1px solid #e0e0e0;
-    display: flex;
-    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
 }
 
 .cart-item ul li:last-child {
     border-bottom: none;
 }
 
+/* Сумма корзины */
 .cart-total {
     font-weight: bold;
-    font-size: 20px;
-    margin-top: 20px;
+    margin-top: 10px;
     color: #333;
-    text-align: right;
 }
 
+/* Кнопки */
 .cart-item a.btn, .cart-item button {
     display: inline-block;
-    background-color: #007bff;
+    background-color: #28a745;
     color: white;
-    padding: 10px;
+    padding: 10px 15px;
     text-decoration: none;
     border-radius: 5px;
     margin-top: 10px;
-    font-size: 14px;
     transition: background-color 0.3s ease;
-    border: none;
 }
 
 .cart-item a.btn:hover, .cart-item button:hover {
-    background-color: #0056b3;
-}
-
-/* Кнопка удаления */
-.cart-item a.btn-delete {
-    background-color: #dc3545;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.cart-item a.btn-delete:hover {
-    background-color: #c82333;
-}
-
-/* Кнопка "Оформить заказ" */
-.checkout-btn {
-    background-color: #28a745;
-    color: white;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 5px;
-    text-align: center;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
-    display: block;
-    width: 100%;
-}
-
-.checkout-btn:hover {
     background-color: #218838;
 }
 
-/* Кнопка отмены */
-.cancel-btn {
-    background-color: #6c757d;
-    color: white;
-    padding: 12px;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
-    display: block;
-    width: 100%;
-}
 
-.cancel-btn:hover {
-    background-color: #5a6268;
-}

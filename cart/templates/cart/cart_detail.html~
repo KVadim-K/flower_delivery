@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% load multiply %}
-
 {% block title %}Корзина{% endblock %}
 
 {% block content %}
@@ -28,7 +26,7 @@
             {% endfor %}
         </ul>
         <p class="cart-total">Общая сумма: {{ cart.get_total_price }} ₽</p>
-        <a href="{% url 'orders:create_order' %}" class="checkout-btn">Оформить заказ</a>
+        <a href="{% url 'orders:create_order' %}" class="btn">Оформить заказ</a>
     {% else %}
         <p>Ваша корзина пуста.</p>
     {% endif %}
