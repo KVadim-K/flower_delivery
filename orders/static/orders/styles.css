@@ -1,75 +1,61 @@
-/* Стили для оформления заказа */
-.order-container {
+/* Общие стили для страницы */
+.container {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.order-container h1 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
+/* Стиль для каждого заказа */
 .order-item {
+    border: 1px solid #ccc;
     padding: 15px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.order-item:last-child {
+/* Стиль для заголовков заказов */
+.order-item h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Список товаров в заказе */
+.order-item ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.order-item ul li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.order-item ul li:last-child {
     border-bottom: none;
 }
 
-.order-summary {
-    margin-top: 20px;
-    font-size: 18px;
+/* Сумма заказа */
+.order-total {
     font-weight: bold;
-    color: #555;
-    text-align: right;
+    margin-top: 10px;
+    color: #333;
 }
 
-/* Кнопки оформления и отмены заказа */
-.checkout-btn {
-    display: block;
-    width: 80%; /* Кнопка занимает 80% ширины контейнера */
-    margin: 20px auto; /* Центрирование кнопки */
+/* Кнопка "Повторить заказ" */
+.order-item a.btn {
+    display: inline-block;
     background-color: #28a745;
     color: white;
-    padding: 12px;
-    text-align: center;
+    padding: 10px 15px;
     text-decoration: none;
     border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
+    margin-top: 10px;
     transition: background-color 0.3s ease;
 }
 
-.checkout-btn:hover {
+.order-item a.btn:hover {
     background-color: #218838;
-}
-
-.cancel-btn {
-    display: block;
-    width: 60%; /* Кнопка занимает 60% ширины контейнера */
-    margin: 10px auto; /* Центрирование кнопки */
-    background-color: #6c757d;
-    color: white;
-    padding: 10px;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.cancel-btn:hover {
-    background-color: #5a6268;
 }
