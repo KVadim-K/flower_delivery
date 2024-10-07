@@ -5,11 +5,8 @@
     <meta charset="UTF-8">
     <title>{% block title %}FlowerDelivery{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <!-- Подключение Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Подключение Font Awesome для иконок -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Мета-теги для адаптивности -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -40,7 +37,6 @@
     </header>
 
     <main class="main-content">
-        <!-- Блок для отображения сообщений -->
         {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
@@ -52,7 +48,6 @@
         {% endif %}
 
         {% block content %}
-        <!-- Основной контент страницы -->
         {% endblock %}
     </main>
 
@@ -66,5 +61,7 @@
             </div>
         </div>
     </footer>
+
+    <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>

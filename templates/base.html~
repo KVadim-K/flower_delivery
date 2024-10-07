@@ -21,15 +21,7 @@
             <ul class="navbar__links" id="navbar-links">
                 <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Главная</a></li>
                 <li><a href="{% url 'products:product_list' %}"><i class="fas fa-seedling"></i> Каталог</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'cart:cart_detail' %}"><i class="fas fa-shopping-cart"></i> Корзина</a></li>
-                    <li><a href="{% url 'orders:order_history' %}"><i class="fas fa-box"></i> Мои заказы</a></li>
-                    <li><a href="{% url 'account_logout' %}"><i class="fas fa-sign-out-alt"></i> Выйти</a></li>
-                    <li class="navbar__greeting">Привет, {{ user.username }}!</li>
-                {% else %}
-                    <li><a href="{% url 'account_login' %}"><i class="fas fa-sign-in-alt"></i> Войти</a></li>
-                    <li><a href="{% url 'account_signup' %}"><i class="fas fa-user-plus"></i> Регистрация</a></li>
-                {% endif %}
+                <!-- Additional links for authenticated users -->
             </ul>
             <div class="navbar__toggle" id="mobile-menu">
                 <span class="bar"></span>
@@ -37,22 +29,24 @@
                 <span class="bar"></span>
             </div>
         </nav>
+
     </header>
 
     <main class="main-content">
-        <!-- Блок для отображения сообщений -->
         {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
-                    <li>{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    <li class="{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                        {{ message }}
+                    </li>
                 {% endfor %}
             </ul>
         {% endif %}
-        
+
         {% block content %}
-        <!-- Основной контент страницы -->
         {% endblock %}
     </main>
+
 
     <footer class="footer">
         <div class="footer__content">

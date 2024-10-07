@@ -1,46 +1,59 @@
 {% extends "base.html" %}
 
-{% block title %}{{ product.name }}{% endblock %}
+{% block title %}{{ product.name }} - FlowerDelivery{% endblock %}
 
 {% block content %}
-<h1>{{ product.name }}</h1>
-<img src="{{ product.image.url }}" alt="{{ product.name }}">
-<p>Цена: {{ product.price }} ₽</p>
-<p>{{ product.description }}</p>
+<div class="product-detail">
+    <div class="product-detail__image">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+    </div>
+    <div class="product-detail__info">
+        <h1 class="product-detail__name">{{ product.name }}</h1>
+        <p class="product-detail__price">Цена: {{ product.price }} ₽</p>
+        <p class="product-detail__description">{{ product.description }}</p>
 
-<form action="{% url 'cart:add_to_cart' product.id %}" method="post">
-    {% csrf_token %}
-    <label for="quantity">Количество:</label>
-    <input type="number" name="quantity" id="quantity" value="1" min="1">
-    <button type="submit">Добавить в корзину</button>
-</form>
+        <!-- Форма добавления в корзину -->
+        <form action="{% url 'cart:add_to_cart' product.id %}" method="post">
+            {% csrf_token %}
+            <label for="quantity">Количество:</label>
+            <input type="number" name="quantity" id="quantity" value="1" min="1">
+            <button type="submit" class="btn btn-primary">Добавить в корзину</button>
+        </form>
 
-<!-- Отображение среднего рейтинга -->
-<h3>Средний Рейтинг:
-    {% if average_rating %}
-        <span class="average-rating">{{ average_rating|floatformat:1 }}/5</span>
-    {% else %}
-        Нет рейтинга
-    {% endif %}
-</h3>
+        <!-- Кнопка для перехода к оформлению заказа -->
+        <form action="{% url 'orders:create_order' product.id %}" method="get" class="buy-now-form">
+            <button type="submit" class="btn btn-secondary">
+                <i class="fas fa-bolt"></i> Купить сейчас
+            </button>
+        </form>
 
-<!-- Ссылка для добавления отзыва -->
-{% if user.is_authenticated %}
-    <a href="{% url 'reviews:add_review' product.id %}">Добавить Отзыв</a>
-{% else %}
-    <p><a href="{% url 'account_login' %}">Войдите</a>, чтобы оставить отзыв.</p>
-{% endif %}
+        <!-- Средний рейтинг -->
+        <h3>Средний Рейтинг:
+            {% if average_rating %}
+                <span class="average-rating">{{ average_rating|floatformat:1 }}/5</span>
+            {% else %}
+                Нет рейтинга
+            {% endif %}
+        </h3>
 
-<!-- Отображение отзывов -->
+        <!-- Ссылка на добавление отзыва -->
+        {% if user.is_authenticated %}
+            <a href="{% url 'reviews:add_review' product.id %}" class="review-link">Добавить Отзыв</a>
+        {% else %}
+            <p><a href="{% url 'account_login' %}">Войдите</a>, чтобы оставить отзыв.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Отзывы -->
 <h3>Отзывы</h3>
 {% if reviews %}
     <ul class="review-list">
         {% for review in reviews %}
             <li class="review-item">
-                <strong>{{ review.user.username }}</strong> -
-                <span class="rating">{{ review.rating }}/5</span>
-                <p>{{ review.comment }}</p>
-                <p><em>{{ review.created_at }}</em></p>
+                <strong>{{ review.user.username }}</strong> - <span class="rating">{{ review.rating }}/5</span>
+                <p class="review-comment">{{ review.comment }}</p>
+                <p class="review-date"><em>{{ review.created_at }}</em></p>
             </li>
         {% endfor %}
     </ul>

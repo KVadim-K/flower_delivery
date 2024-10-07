@@ -41,12 +41,15 @@ def create_order(request):
 
 @login_required
 def order_history(request):
-    orders = Order.objects.filter(user=request.user).prefetch_related('order_items')
+    # Сортируем заказы по дате создания в убывающем порядке
+    orders = Order.objects.filter(user=request.user).prefetch_related('order_items').order_by('-created_at')
+
     for order in orders:
         total_price = 0
         for item in order.order_items.all():
             total_price += item.quantity * item.product.price
         order.total_price = total_price  # Добавляем атрибут для отображения в шаблоне
+
     return render(request, 'orders/order_history.html', {'orders': orders})
 
 
