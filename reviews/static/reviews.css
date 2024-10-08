@@ -1,0 +1,22 @@
+/* Стили для рейтинга звезд */
+.star-rating {
+    display: inline-flex;
+    cursor: pointer;
+}
+
+.star {
+    font-size: 2rem;
+    color: #ddd; /* Цвет невыбранных звезд */
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.star.selected,
+.star.hover {
+    color: #FFD700; /* Цвет выбранных и наведенных звезд - золотой */
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5), 0 0 10px rgba(255, 215, 0, 0.7);
+}
+
+/* Эффект увеличения при наведении */
+.star:hover {
+    transform: scale(1.2);
+}

@@ -1,8 +1,33 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Главная{% endblock %}
+{% block title %}Добро пожаловать в FlowerDelivery{% endblock %}
 
 {% block content %}
-<h1>Добро пожаловать в FlowerDelivery!</h1>
-<p>Лучшие цветы по доступным ценам.</p>
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<div class="interactive-bg">
+    <div class="hero-content">
+        <h1>Добро пожаловать в FlowerDelivery!</h1>
+        <p>Дарите радость и красоту с нашими свежими цветами, доставленными прямо к вам.</p>
+        <a href="{% url 'products:product_list' %}" class="btn btn-primary">Перейти в каталог</a>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="feature">
+        <i class="fas fa-truck fa-3x"></i>
+        <h3>Быстрая Доставка</h3>
+        <p>Доставляем свежие цветы прямо к вашему порогу в кратчайшие сроки.</p>
+    </div>
+    <div class="feature">
+        <i class="fas fa-leaf fa-3x"></i>
+        <h3>Свежесть Гарантирована</h3>
+        <p>Мы обеспечиваем самую высокую степень свежести и качества цветов.</p>
+    </div>
+    <div class="feature">
+        <i class="fas fa-heart fa-3x"></i>
+        <h3>Подарите Любовь</h3>
+        <p>Цветы — это идеальный способ выразить свои чувства и подарить радость.</p>
+    </div>
+</div>
 {% endblock %}

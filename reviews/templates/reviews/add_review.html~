@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Добавить отзыв{% endblock %}
+
+{% block content %}
+<h1 class="section-title">Добавить отзыв для {{ product.name }}</h1>
+
+<form action="" method="post" class="review-form">
+    {% csrf_token %}
+    <label for="rating">Рейтинг:</label>
+    <div id="rating" class="star-rating">
+        <input type="hidden" name="rating" id="rating-value" value="0">
+        <span data-value="1" class="star">&#9733;</span>
+        <span data-value="2" class="star">&#9733;</span>
+        <span data-value="3" class="star">&#9733;</span>
+        <span data-value="4" class="star">&#9733;</span>
+        <span data-value="5" class="star">&#9733;</span>
+    </div>
+    <label for="comment">Комментарий:</label>
+    <textarea name="comment" id="comment" rows="4"></textarea>
+    <button type="submit" class="btn btn-primary">Оставить отзыв</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/rating.js' %}"></script>
+{% endblock %}

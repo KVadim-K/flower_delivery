@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}{{ product.name }} - FlowerDelivery{% endblock %}
 
@@ -17,20 +18,21 @@
             {% csrf_token %}
             <label for="quantity">Количество:</label>
             <input type="number" name="quantity" id="quantity" value="1" min="1">
-            <button type="submit" class="btn btn-primary">Добавить в корзину</button>
+            <button type="submit" class="btn btn-add-to-cart">Добавить в корзину</button>
         </form>
 
         <!-- Кнопка для перехода к оформлению заказа -->
-        <form action="{% url 'orders:create_order' product.id %}" method="get" class="buy-now-form">
-            <button type="submit" class="btn btn-secondary">
-                <i class="fas fa-bolt"></i> Купить сейчас
-            </button>
-        </form>
+        <a href="{% url 'orders:create_order' product.id %}" class="btn btn-buy-now">Купить сейчас</a>
 
-        <!-- Средний рейтинг -->
+        <!-- Средний рейтинг с отображением звёздочек -->
         <h3>Средний Рейтинг:
             {% if average_rating %}
                 <span class="average-rating">{{ average_rating|floatformat:1 }}/5</span>
+                <div class="star-rating">
+                    {% for star in "12345" %}
+                        <span class="star {% if forloop.counter <= filled_stars %}filled{% endif %}">&#9733;</span>
+                    {% endfor %}
+                </div>
             {% else %}
                 Нет рейтинга
             {% endif %}
@@ -51,7 +53,11 @@
     <ul class="review-list">
         {% for review in reviews %}
             <li class="review-item">
-                <strong>{{ review.user.username }}</strong> - <span class="rating">{{ review.rating }}/5</span>
+                <strong>{{ review.user.username }}</strong> - <span class="rating">
+                    {% for star in "12345" %}
+                        <span class="star {% if forloop.counter <= review.rating %}filled{% endif %}">&#9733;</span>
+                    {% endfor %}
+                </span>
                 <p class="review-comment">{{ review.comment }}</p>
                 <p class="review-date"><em>{{ review.created_at }}</em></p>
             </li>

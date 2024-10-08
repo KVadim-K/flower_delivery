@@ -284,7 +284,7 @@ p {
 /* Кнопка для добавления в корзину на странице товара */
 .btn-add-to-cart {
     background-color: #ff5252;
-    padding: 0.5rem 1.5rem; /* Стандартный размер */
+    padding: 0.5rem 1.5rem; /* Оставляем размер текущим */
 }
 
 .btn-add-to-cart:hover {
@@ -294,9 +294,8 @@ p {
 /* Кнопка для покупки на странице товара */
 .btn-buy-now {
     background-color: #ff5722;
-    padding: 0.5rem 1.5rem; /* Стандартный размер */
-    width: 150px; /* Уменьшенная фиксированная ширина */
-    text-align: center;
+    padding: 0.5rem 1rem; /* Уменьшенные отступы для компактного вида */
+    width: 100%; /* Ширина подстраивается по контенту */
 }
 
 .btn-buy-now:hover {

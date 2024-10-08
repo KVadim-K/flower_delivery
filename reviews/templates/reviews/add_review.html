@@ -1,12 +1,27 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Добавить Отзыв{% endblock %}
 
 {% block content %}
-<h1>Добавить Отзыв на {{ product.name }}</h1>
-<form method="post">
+<h1>Оставить отзыв для {{ product.name }}</h1>
+<form action="" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Отправить</button>
+    <div class="form-group">
+        <label for="rating">Рейтинг:</label>
+        <div class="star-rating">
+            <span class="star" data-value="5">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="1">&#9733;</span>
+        </div>
+        <input type="hidden" name="rating" id="rating-value" value="{{ form.rating.value }}">
+    </div>
+    <div class="form-group">
+        <label for="comment">Комментарий:</label>
+        {{ form.comment }}
+    </div>
+    <button type="submit" class="btn btn-primary">Оставить отзыв</button>
 </form>
 {% endblock %}

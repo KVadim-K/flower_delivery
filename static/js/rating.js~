@@ -1,0 +1,44 @@
+// Получаем все элементы звезд
+const stars = document.querySelectorAll('.star');
+const ratingInput = document.querySelector('#rating-value');
+let currentRating = 0;
+
+// Функция для установки выбранного количества звезд
+function setRating(rating) {
+    resetStars();
+    for (let i = 0; i < rating; i++) {
+        stars[i].classList.add('selected');
+    }
+    currentRating = rating;
+    ratingInput.value = rating;
+}
+
+// Сброс всех звезд
+function resetStars() {
+    stars.forEach(star => {
+        star.classList.remove('selected');
+    });
+}
+
+// Добавление обработчиков событий на звезды
+stars.forEach((star, index) => {
+    star.addEventListener('mouseover', () => {
+        resetStars();
+        for (let i = 0; i <= index; i++) {
+            stars[i].classList.add('selected');
+        }
+    });
+
+    star.addEventListener('mouseout', () => {
+        setRating(currentRating); // Восстанавливаем рейтинг после выхода курсора
+    });
+
+    star.addEventListener('click', () => {
+        setRating(index + 1); // Обновляем рейтинг при клике
+    });
+});
+
+// Устанавливаем начальный рейтинг, если он уже существует
+if (ratingInput && ratingInput.value) {
+    setRating(ratingInput.value);
+}

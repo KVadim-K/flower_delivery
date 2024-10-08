@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}{{ product.name }} - FlowerDelivery{% endblock %}
 
@@ -21,13 +22,17 @@
         </form>
 
         <!-- Кнопка для перехода к оформлению заказа -->
-        <a href="{% url 'orders:create_order' product.id %}" class="btn">Купить сейчас</a>
+        <a href="{% url 'orders:create_order' product.id %}" class="btn btn-buy-now">Купить сейчас</a>
 
-
-        <!-- Средний рейтинг -->
+        <!-- Средний рейтинг с отображением звёздочек -->
         <h3>Средний Рейтинг:
             {% if average_rating %}
                 <span class="average-rating">{{ average_rating|floatformat:1 }}/5</span>
+                <div class="star-rating">
+                    {% for star in "12345" %}
+                        <span class="star {% if forloop.counter <= filled_stars %}filled{% endif %}">&#9733;</span>
+                    {% endfor %}
+                </div>
             {% else %}
                 Нет рейтинга
             {% endif %}
@@ -48,9 +53,13 @@
     <ul class="review-list">
         {% for review in reviews %}
             <li class="review-item">
-                <strong>{{ review.user.username }}</strong> - <span class="rating">{{ review.rating }}/5</span>
-                <p>{{ review.comment }}</p>
-                <p><em>{{ review.created_at }}</em></p>
+                <strong>{{ review.user.username }}</strong> - <span class="rating">
+                    {% for star in "12345" %}
+                        <span class="star {% if forloop.counter <= review.rating %}filled{% endif %}">&#9733;</span>
+                    {% endfor %}
+                </span>
+                <p class="review-comment">{{ review.comment }}</p>
+                <p class="review-date"><em>{{ review.created_at }}</em></p>
             </li>
         {% endfor %}
     </ul>

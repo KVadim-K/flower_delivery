@@ -15,7 +15,7 @@ def product_detail(request, pk):
     # Получаем все отзывы, связанные с текущим продуктом.
     reviews = Review.objects.filter(product=product)
 
-    # Подсчет среднего рейтинга
+    # Вычисляем средний рейтинг по всем отзывам данного продукта. Если отзывов нет, значение будет None.
     average_rating = reviews.aggregate(avg_rating=Avg('rating'))['avg_rating']
 
     return render(request, 'products/product_detail.html', {

@@ -5,11 +5,9 @@
     <meta charset="UTF-8">
     <title>{% block title %}FlowerDelivery{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <!-- Подключение Google Fonts -->
+    <link rel="stylesheet" href="{% static 'reviews.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Подключение Font Awesome для иконок -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Мета-теги для адаптивности -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
@@ -21,7 +19,15 @@
             <ul class="navbar__links" id="navbar-links">
                 <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Главная</a></li>
                 <li><a href="{% url 'products:product_list' %}"><i class="fas fa-seedling"></i> Каталог</a></li>
-                <!-- Additional links for authenticated users -->
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'cart:cart_detail' %}"><i class="fas fa-shopping-cart"></i> Корзина</a></li>
+                    <li><a href="{% url 'orders:order_history' %}"><i class="fas fa-box"></i> Мои заказы</a></li>
+                    <li><a href="{% url 'account_logout' %}"><i class="fas fa-sign-out-alt"></i> Выйти</a></li>
+                    <li class="navbar__greeting">Привет, {{ user.username }}!</li>
+                {% else %}
+                    <li><a href="{% url 'account_login' %}"><i class="fas fa-sign-in-alt"></i> Войти</a></li>
+                    <li><a href="{% url 'account_signup' %}"><i class="fas fa-user-plus"></i> Регистрация</a></li>
+                {% endif %}
             </ul>
             <div class="navbar__toggle" id="mobile-menu">
                 <span class="bar"></span>
@@ -29,7 +35,6 @@
                 <span class="bar"></span>
             </div>
         </nav>
-
     </header>
 
     <main class="main-content">
@@ -47,7 +52,6 @@
         {% endblock %}
     </main>
 
-
     <footer class="footer">
         <div class="footer__content">
             <p>&copy; 2024 FlowerDelivery. Все права защищены.</p>
@@ -58,5 +62,7 @@
             </div>
         </div>
     </footer>
+
+   <script src="{% static 'js/rating.js' %}"></script>
 </body>
 </html>
