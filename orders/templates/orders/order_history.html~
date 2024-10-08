@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% load static %}
-{% load multiply %}
+{% load orders_multiply %}
 
 {% block title %}История Заказов{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'orders/styles.css' %}"> <!-- Подключаем файл стилей -->
+<link rel="stylesheet" href="{% static 'orders/orders.css' %}">
 
 <div class="container">
     <h1>История Ваших Заказов</h1>
     {% if orders %}
         {% for order in orders %}
             <div class="order-item">
-                <h3>Заказ №{{ order.id }} - {{ order.get_status_display }} - {{ order.created_at }}</h3>
+                <h3>Заказ №{{ order.id }} - Статус: {{ order.get_status_display }} - {{ order.created_at|date:"d.m.Y H:i" }}</h3>
                 <ul>
                     {% for item in order.order_items.all %}
                         <li>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} ₽ = {{ item.quantity|multiply:item.product.price }} ₽</li>

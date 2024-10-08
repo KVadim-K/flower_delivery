@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
-{% load multiply %}
+{% load cart_multiply %}
 
 {% block title %}Корзина{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'cart/styles.css' %}"> <!-- Подключаем файл стилей -->
+<link rel="stylesheet" href="{% static 'cart/cart.css' %}"> <!-- Подключаем файл стилей -->
 
 <div class="cart-container">
     <h1>Ваша Корзина</h1>

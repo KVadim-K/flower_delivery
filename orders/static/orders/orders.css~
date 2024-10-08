@@ -1,0 +1,88 @@
+/* Основной контейнер для страницы */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок */
+.container h1 {
+    font-size: 1.8rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Список товаров */
+.order-items {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.order-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.order-item h3 {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.order-item p {
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* Общая сумма */
+.order-total {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #333;
+    text-align: right;
+    margin-top: 1rem;
+}
+
+/* Кнопка подтверждения */
+.btn-confirm {
+    display: inline-block;
+    background-color: #4caf50; /* Зеленый цвет для подтверждения */
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.btn-confirm:hover {
+    background-color: #43a047;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    .order-item {
+        padding: 10px;
+    }
+    .order-item h3 {
+        font-size: 1rem;
+    }
+    .order-total {
+        font-size: 1rem;
+    }
+}

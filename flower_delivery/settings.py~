@@ -175,3 +175,18 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST_USER = 'your_email@example.com'  # Замените на ваш email
 # EMAIL_HOST_PASSWORD = 'your_email_password'  # Замените на ваш пароль
 # DEFAULT_FROM_EMAIL = 'your_email@example.com'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
