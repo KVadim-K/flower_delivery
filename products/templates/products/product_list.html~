@@ -8,16 +8,22 @@
 <div class="product-grid">
     {% for product in products %}
         <div class="product-card">
-            <a href="{{ product.image.url }}" target="_blank" class="product-image">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+            <a href="{% url 'products:product_detail' product.id %}">
+                <div class="product-image">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                    {% else %}
+                        <img src="{% static 'images/placeholder.png' %}" alt="Изображение отсутствует" loading="lazy">
+                    {% endif %}
+                </div>
             </a>
             <div class="product-info">
                 <h2 class="product-name">{{ product.name }}</h2>
                 <p class="product-price">{{ product.price }} ₽</p>
             </div>
-            <a href="{% url 'orders:create_order' product.id %}" class="btn btn-add-to-cart">
+            <button class="btn btn-add-to-cart">
                 <i class="fas fa-shopping-cart"></i> Добавить в корзину
-            </a>
+            </button>
         </div>
     {% empty %}
         <p>Нет доступных продуктов.</p>

@@ -8,7 +8,8 @@
 <div class="product-grid">
     {% for product in products %}
         <div class="product-card">
-            <a href="{% url 'products:product_detail' product.id %}">
+            <!-- Обернём всю карточку в ссылку для перехода -->
+            <a href="{% url 'products:product_detail' product.id %}" class="product-link">
                 <div class="product-image">
                     {% if product.image %}
                         <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
@@ -16,14 +17,18 @@
                         <img src="{% static 'images/placeholder.png' %}" alt="Изображение отсутствует" loading="lazy">
                     {% endif %}
                 </div>
+                <div class="product-info">
+                    <h2 class="product-name">{{ product.name }}</h2>
+                    <p class="product-price">{{ product.price }} ₽</p>
+                </div>
             </a>
-            <div class="product-info">
-                <h2 class="product-name">{{ product.name }}</h2>
-                <p class="product-price">{{ product.price }} ₽</p>
-            </div>
-            <button class="btn btn-add-to-cart">
-                <i class="fas fa-shopping-cart"></i> Добавить в корзину
-            </button>
+            <!-- Кнопка добавления в корзину -->
+            <form action="{% url 'cart:add_to_cart' product.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-add-to-cart">
+                    <i class="fas fa-shopping-cart"></i> Добавить в корзину
+                </button>
+            </form>
         </div>
     {% empty %}
         <p>Нет доступных продуктов.</p>
