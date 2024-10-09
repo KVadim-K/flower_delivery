@@ -5,7 +5,7 @@
 
 {% block content %}
 <h1>Оставить отзыв для {{ product.name }}</h1>
-<form action="" method="post">
+<form action="" method="post" id="review-form">
     {% csrf_token %}
     <div class="form-group">
         <label for="rating">Рейтинг:</label>
@@ -24,4 +24,41 @@
     </div>
     <button type="submit" class="btn btn-primary">Оставить отзыв</button>
 </form>
+
+<script src="{% static 'js/rating.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star-rating .star');
+    const ratingValueInput = document.getElementById('rating-value');
+
+    stars.forEach((star) => {
+        star.addEventListener('mouseover', function() {
+            setStars(this.getAttribute('data-value'));
+        });
+        star.addEventListener('click', function() {
+            ratingValueInput.value = this.getAttribute('data-value');
+        });
+    });
+
+    document.getElementById('review-form').addEventListener('submit', function(event) {
+        const ratingValue = ratingValueInput.value;
+        const comment = document.querySelector('#id_comment').value.trim();
+
+        if (!ratingValue || !comment) {
+            event.preventDefault();
+            alert("Пожалуйста, заполните оба поля: выберите количество звезд и оставьте комментарий.");
+        }
+    });
+
+    function setStars(rating) {
+        stars.forEach((star) => {
+            if (star.getAttribute('data-value') <= rating) {
+                star.classList.add('selected');
+            } else {
+                star.classList.remove('selected');
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

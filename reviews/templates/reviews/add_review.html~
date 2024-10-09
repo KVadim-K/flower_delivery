@@ -1,28 +1,27 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Добавить отзыв{% endblock %}
+{% block title %}Добавить Отзыв{% endblock %}
 
 {% block content %}
-<h1 class="section-title">Добавить отзыв для {{ product.name }}</h1>
-
-<form action="" method="post" class="review-form">
+<h1>Оставить отзыв для {{ product.name }}</h1>
+<form action="" method="post">
     {% csrf_token %}
-    <label for="rating">Рейтинг:</label>
-    <div id="rating" class="star-rating">
-        <input type="hidden" name="rating" id="rating-value" value="0">
-        <span data-value="1" class="star">&#9733;</span>
-        <span data-value="2" class="star">&#9733;</span>
-        <span data-value="3" class="star">&#9733;</span>
-        <span data-value="4" class="star">&#9733;</span>
-        <span data-value="5" class="star">&#9733;</span>
+    <div class="form-group">
+        <label for="rating">Рейтинг:</label>
+        <div class="star-rating">
+            <span class="star" data-value="5">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="1">&#9733;</span>
+        </div>
+        <input type="hidden" name="rating" id="rating-value" value="{{ form.rating.value }}">
     </div>
-    <label for="comment">Комментарий:</label>
-    <textarea name="comment" id="comment" rows="4"></textarea>
+    <div class="form-group">
+        <label for="comment">Комментарий:</label>
+        {{ form.comment }}
+    </div>
     <button type="submit" class="btn btn-primary">Оставить отзыв</button>
 </form>
-{% endblock %}
-
-{% block extra_js %}
-    <script src="{% static 'js/rating.js' %}"></script>
 {% endblock %}

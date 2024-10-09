@@ -21,16 +21,15 @@
     transform: scale(1.2);
 }
 
-.star-rating .star:before {
-    content: '\2605'; /* Символ звезды */
-    background: linear-gradient(135deg, #FFD700 20%, #FFA500 80%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: #FFD700; /* Цвет для тех браузеров, которые не поддерживают градиенты */
+
+.star {
+    font-size: 2rem;
+    cursor: pointer;
+    color: #ddd;
+    transition: color 0.3s;
 }
 
-.star.selected:before,
-.star.hover:before {
+.star:hover,
+.star.selected {
     color: #FFD700;
-    -webkit-text-fill-color: #FFD700;
 }
