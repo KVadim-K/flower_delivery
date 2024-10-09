@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'orders.apps.OrdersConfig',
     'reviews.apps.ReviewsConfig',
     'reports.apps.ReportsConfig',
+    'telegram_bot.apps.TelegramBotConfig',  # Добавляем telegram_bot
 ]
 
 MIDDLEWARE = [

@@ -52,12 +52,14 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 
     # Ваши приложения (будут созданы позже)
+    'users',
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
     'reviews.apps.ReviewsConfig',
     'reports.apps.ReportsConfig',
+    'telegram_bot.apps.TelegramBotConfig',  # Добавляем telegram_bot
 ]
 
 MIDDLEWARE = [
@@ -129,7 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'  # Для московского времени
 
 USE_I18N = True
 

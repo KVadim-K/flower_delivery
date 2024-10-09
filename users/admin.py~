@@ -16,7 +16,7 @@ class CustomUserAdmin(UserAdmin):
     )
 
     # Опционально: отображение новых полей в списке пользователей
-    list_display = UserAdmin.list_display + ('phone', 'telegram_id', 'address')
+    list_display = UserAdmin.list_display + ('phone', 'telegram_id')
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
