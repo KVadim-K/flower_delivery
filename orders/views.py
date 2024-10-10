@@ -4,10 +4,16 @@ from cart.models import Cart, CartItem
 from .models import Order, OrderItem
 from products.models import Product  # добавлено для работы с моделью Product
 from django.utils import timezone
+from rest_framework import generics, permissions
+from .serializers import OrderSerializer
 
+# Ваши существующие представления
 
 @login_required
 def create_order(request, product_id=None):
+    """
+    Создание заказа через веб-интерфейс.
+    """
     # Получаем корзину текущего пользователя или создаём новую
     cart, created = Cart.objects.get_or_create(user=request.user)
 
@@ -40,6 +46,11 @@ def create_order(request, product_id=None):
                 product=item.product,
                 quantity=item.quantity
             )
+
+        # Вычисляем общую сумму заказа
+        total_price = sum(item.product.price * item.quantity for item in order.order_items.all())
+        order.total_price = total_price
+        order.save()
 
         # Очищаем корзину после создания заказа
         cart.items.all().delete()
@@ -93,7 +104,27 @@ def update_cart(request):
     for item in cart.items.all():
         quantity = request.POST.get(f'quantity_{item.id}')
         if quantity:
-            item.quantity = int(quantity)
-            item.save()
-
+            try:
+                quantity = int(quantity)
+                if quantity > 0:
+                    item.quantity = quantity
+                    item.save()
+                else:
+                    item.delete()
+            except ValueError:
+                pass  # Игнорируем некорректные значения
     return redirect('cart:cart_detail')
+
+
+# Добавление API-представления для создания заказа
+
+class CreateOrderAPIView(generics.CreateAPIView):
+    """
+    API-представление для создания нового заказа.
+    """
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

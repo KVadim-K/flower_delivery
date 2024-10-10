@@ -4,19 +4,18 @@ from .models import CustomUser
 
 
 class CustomUserAdmin(UserAdmin):
-    # Добавляем новые поля в существующие fieldsets
+    # Добавление полей в форму редактирования существующих пользователей
     fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('phone', 'address', 'telegram_id')}),
+        ('Дополнительная информация', {'fields': ('phone', 'address', 'telegram_id')}),
     )
 
-    # Если вы хотите отображать новые поля при добавлении пользователя через админку,
-    # необходимо обновить add_fieldsets
+    # Добавление полей в форму создания новых пользователей
     add_fieldsets = UserAdmin.add_fieldsets + (
-        (None, {'fields': ('phone', 'address', 'telegram_id')}),
+        ('Дополнительная информация', {'fields': ('phone', 'address', 'telegram_id')}),
     )
 
     # Опционально: отображение новых полей в списке пользователей
     list_display = UserAdmin.list_display + ('phone', 'telegram_id', 'address')
 
-
+# Регистрация модели CustomUser с новым админ-классом
 admin.site.register(CustomUser, CustomUserAdmin)

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
 
     # Необходимо для django-allauth
     'django.contrib.sites',
@@ -52,7 +53,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 
     # Ваши приложения (будут созданы позже)
-    'users',
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
     'cart.apps.CartConfig',
