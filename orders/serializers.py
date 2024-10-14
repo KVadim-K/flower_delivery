@@ -36,3 +36,14 @@ class OrderSerializer(serializers.ModelSerializer):
         order.total_price = total_price
         order.save()
         return order
+
+class OrderStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['id', 'status', 'created_at']
+
+class OrderAnalyticsSerializer(serializers.Serializer):
+    total_orders = serializers.IntegerField()
+    total_sales = serializers.DecimalField(max_digits=12, decimal_places=2)
+    total_profit = serializers.DecimalField(max_digits=12, decimal_places=2)
+    total_expenses = serializers.DecimalField(max_digits=12, decimal_places=2)

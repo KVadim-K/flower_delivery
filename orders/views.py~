@@ -11,6 +11,9 @@ from .serializers import OrderSerializer
 
 @login_required
 def create_order(request, product_id=None):
+    """
+    Создание заказа через веб-интерфейс.
+    """
     # Получаем корзину текущего пользователя или создаём новую
     cart, created = Cart.objects.get_or_create(user=request.user)
 
@@ -125,3 +128,30 @@ class CreateOrderAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+# API-представление для проверки статуса заказа
+class OrderStatusAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        serializer = OrderStatusSerializer(order)
+        return Response(serializer.data)
+
+# API-представление для аналитики заказов
+class OrderAnalyticsAPIView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        total_orders = Order.objects.count()
+        total_sales = Order.objects.aggregate(Sum('order_items__product__price'))['order_items__product__price__sum'] or 0
+        total_profit = total_sales * 0.2
+        total_expenses = total_sales * 0.8
+        data = {
+            'total_orders': total_orders,
+            'total_sales': total_sales,
+            'total_profit': total_profit,
+            'total_expenses': total_expenses,
+        }
+        serializer = OrderAnalyticsSerializer(data)
+        return Response(serializer.data)

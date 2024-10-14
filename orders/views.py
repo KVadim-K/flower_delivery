@@ -2,10 +2,13 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from cart.models import Cart, CartItem
 from .models import Order, OrderItem
-from products.models import Product  # добавлено для работы с моделью Product
+from products.models import Product
 from django.utils import timezone
 from rest_framework import generics, permissions
-from .serializers import OrderSerializer
+from .serializers import OrderSerializer, OrderStatusSerializer, OrderAnalyticsSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Sum
 
 # Ваши существующие представления
 
@@ -128,3 +131,30 @@ class CreateOrderAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+# API-представление для проверки статуса заказа
+class OrderStatusAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+        serializer = OrderStatusSerializer(order)
+        return Response(serializer.data)
+
+# API-представление для аналитики заказов
+class OrderAnalyticsAPIView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        total_orders = Order.objects.count()
+        total_sales = Order.objects.aggregate(Sum('order_items__product__price'))['order_items__product__price__sum'] or 0
+        total_profit = total_sales * 0.2
+        total_expenses = total_sales * 0.8
+        data = {
+            'total_orders': total_orders,
+            'total_sales': total_sales,
+            'total_profit': total_profit,
+            'total_expenses': total_expenses,
+        }
+        serializer = OrderAnalyticsSerializer(data)
+        return Response(serializer.data)
