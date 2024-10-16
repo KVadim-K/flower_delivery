@@ -40,23 +40,3 @@ async def cmd_help_handler(message: Message):
         "/order - Создать новый заказ\n"
         "/status <order_id> - Узнать статус заказа"
     )
-@router.message(Command(commands=["link"]))
-async def cmd_link_handler(message: Message, state: FSMContext):
-    """
-    Обработчик команды /link для связывания Telegram ID с пользователем Django
-    """
-    args = message.get_args()
-    if not args:
-        await message.answer("Пожалуйста, укажите ваше имя пользователя на сайте. Пример: /link john_doe")
-        return
-    username = args.strip()
-
-    # Отправляем сообщение с подтверждением связывания
-    await message.answer(
-        f"Вы хотите связать Telegram аккаунт с учётной записью '{username}'?",
-        reply_markup=confirm_link_kb
-    )
-
-    # Сохраняем данные в состоянии FSM
-    await state.update_data(username=username)
-    await state.set_state("confirming_link")
