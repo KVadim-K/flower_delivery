@@ -9,12 +9,6 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
 
-# Импорт роутеров и middleware
-from telegram_bot.bot.handlers.commands import router as commands_router
-from telegram_bot.bot.handlers.orders import router as orders_router
-from telegram_bot.bot.handlers.callbacks import router as callbacks_router  # Импортируйте роутер для callback
-from telegram_bot.bot.middlewares.logging_middleware import LoggingMiddleware
-
 # Определение пути к .env файлу
 env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
 load_dotenv(dotenv_path=env_path)
@@ -32,10 +26,21 @@ print(f"API_URL: {API_URL}")
 print(f"ADMIN_TELEGRAM_IDS: {ADMIN_TELEGRAM_IDS}")
 print(f"BOT_TOKEN: {BOT_TOKEN}")
 
+# Импорт роутеров и middleware
+from telegram_bot.bot.handlers.commands import router as commands_router
+from telegram_bot.bot.handlers.orders import router as orders_router
+from telegram_bot.bot.handlers.callbacks import router as callbacks_router  # Импортируйте роутер для callback
+from telegram_bot.bot.middlewares.logging_middleware import LoggingMiddleware
+
+
 # Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler("bot.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
 )
 logger = logging.getLogger(__name__)
 

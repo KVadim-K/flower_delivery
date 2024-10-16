@@ -1,16 +1,19 @@
 from aiogram import Router, types
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
 
 from telegram_bot.bot.keyboards.inline import navigation_kb, confirm_link_kb
 from telegram_bot.bot.utils.api_client import APIClient
 
 from aiogram.fsm.context import FSMContext
-from telegram_bot.bot.keyboards.inline import confirm_link_kb
 
 import os
 from dotenv import load_dotenv
 import aiohttp
+
+
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -40,3 +43,24 @@ async def cmd_help_handler(message: Message):
         "/order - Создать новый заказ\n"
         "/status <order_id> - Узнать статус заказа"
     )
+
+@router.message(Command(commands=["link"]))
+async def cmd_link_handler(message: Message, command: CommandObject, state: FSMContext):
+    """
+    Обработчик команды /link для связывания Telegram ID с пользователем Django
+    """
+    args = command.args
+    if not args:
+        await message.answer("Пожалуйста, укажите ваше имя пользователя на сайте. Пример: /link john_doe")
+        return
+    username = args.strip()
+
+    # Отправляем сообщение с подтверждением связывания
+    await message.answer(
+        f"Вы хотите связать Telegram аккаунт с учётной записью '{username}'?",
+        reply_markup=confirm_link_kb
+    )
+
+    # Сохраняем данные в состоянии FSM
+    await state.update_data(username=username)
+    await state.set_state("confirming_link")

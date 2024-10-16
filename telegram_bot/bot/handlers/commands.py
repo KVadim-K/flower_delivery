@@ -1,16 +1,17 @@
 from aiogram import Router, types
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
 
 from telegram_bot.bot.keyboards.inline import navigation_kb, confirm_link_kb
 from telegram_bot.bot.utils.api_client import APIClient
 
 from aiogram.fsm.context import FSMContext
-from telegram_bot.bot.keyboards.inline import confirm_link_kb
 
-import os
 from dotenv import load_dotenv
-import aiohttp
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -40,12 +41,13 @@ async def cmd_help_handler(message: Message):
         "/order - Создать новый заказ\n"
         "/status <order_id> - Узнать статус заказа"
     )
+
 @router.message(Command(commands=["link"]))
-async def cmd_link_handler(message: Message, state: FSMContext):
+async def cmd_link_handler(message: Message, command: CommandObject, state: FSMContext):
     """
     Обработчик команды /link для связывания Telegram ID с пользователем Django
     """
-    args = message.get_args()
+    args = command.args
     if not args:
         await message.answer("Пожалуйста, укажите ваше имя пользователя на сайте. Пример: /link john_doe")
         return

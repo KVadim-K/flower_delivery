@@ -1,16 +1,13 @@
-# telegram_bot/bot/handlers/callbacks.py
-
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup
 from aiogram.fsm.context import FSMContext
 from telegram_bot.bot.keyboards.inline import navigation_kb, order_details_kb
 from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
 
+import logging
 import os
-from dotenv import load_dotenv
-import aiohttp
 
-load_dotenv()
+logger = logging.getLogger(__name__)
 
 router = Router()
 
@@ -53,6 +50,37 @@ async def cancel_link_callback(callback: CallbackQuery, state: FSMContext):
     """
     await callback.message.edit_text(
         "Связывание аккаунта отменено.",
+        reply_markup=navigation_kb
+    )
+    await state.clear()
+    await callback.answer()
+
+@router.callback_query(F.data == "confirm_order")
+async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
+    """
+    Обработчик подтверждения создания заказа
+    """
+    # Предполагается, что данные заказа уже сохранены в состоянии FSM
+    user_data = await state.get_data()
+    order_id = user_data.get('order_id')
+
+    # Здесь можно добавить логику подтверждения заказа через API Django
+    # Например, отправить запрос на подтверждение заказа
+
+    await callback.message.edit_text(
+        f"Ваш заказ №{order_id} подтверждён.",
+        reply_markup=navigation_kb
+    )
+    await state.clear()
+    await callback.answer()
+
+@router.callback_query(F.data == "cancel_order")
+async def cancel_order_callback(callback: CallbackQuery, state: FSMContext):
+    """
+    Обработчик отмены создания заказа
+    """
+    await callback.message.edit_text(
+        "Создание заказа отменено.",
         reply_markup=navigation_kb
     )
     await state.clear()

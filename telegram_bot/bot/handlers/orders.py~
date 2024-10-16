@@ -3,11 +3,12 @@ from aiogram.types import Message
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from telegram_bot.bot.states.order_states import OrderStates
-from telegram_bot.bot.utils.api_client import APIClient
+from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
+from telegram_bot.bot.keyboards.inline import confirm_order_kb
 
 import os
-import aiohttp
 from dotenv import load_dotenv
+import aiohttp
 
 load_dotenv()
 
@@ -54,7 +55,7 @@ async def process_quantity(message: Message, state: FSMContext):
     # Получение API-токена пользователя по Telegram ID
     user_api_token = await get_user_api_token(message.from_user.id)
     if not user_api_token:
-        await message.answer("Ваш Telegram аккаунт не связан с аккаунтом на сайте. Используйте /start для связывания.")
+        await message.answer("Ваш Telegram аккаунт не связан с учётной записью на сайте. Используйте /link для связывания.")
         await state.clear()
         return
 
@@ -64,43 +65,16 @@ async def process_quantity(message: Message, state: FSMContext):
         order_response = await api_client.create_order([
             {"product": product_id, "quantity": quantity}
         ])
-        await message.answer(f"Ваш заказ №{order_response['id']} успешно создан!")
+        await message.answer(
+            f"Ваш заказ №{order_response['id']} успешно создан!",
+            reply_markup=confirm_order_kb  # Добавляем клавиатуру с кнопками подтверждения
+        )
     except Exception as e:
         await message.answer(f"Произошла ошибка при создании заказа: {str(e)}")
     finally:
         await api_client.close()
 
     await state.clear()
-
-@router.message(Command(commands=["status"]))
-async def cmd_status(message: Message, state: FSMContext):
-    """
-    Обработчик команды /status для получения статуса заказа
-    """
-    args = message.get_args()
-    if not args:
-        await message.answer("Пожалуйста, укажите ID заказа. Пример: /status 123")
-        return
-    order_id = args.strip()
-    if not order_id.isdigit():
-        await message.answer("ID заказа должен быть числом. Попробуйте снова.")
-        return
-
-    # Получение API-токена пользователя по Telegram ID
-    user_api_token = await get_user_api_token(message.from_user.id)
-    if not user_api_token:
-        await message.answer("Ваш Telegram аккаунт не связан с аккаунтом на сайте. Используйте /start для связывания.")
-        return
-
-    api_client = APIClient(token=user_api_token)
-
-    try:
-        status_response = await api_client.get_order_status(order_id)
-        await message.answer(f"Заказ №{status_response['id']} находится в статусе: {status_response['status']}")
-    except Exception as e:
-        await message.answer(f"Не удалось получить статус заказа: {str(e)}")
-    finally:
-        await api_client.close()
 
 # Вспомогательные функции
 
@@ -117,18 +91,4 @@ async def get_product_id_by_name(product_name: str) -> int:
                 data = await response.json()
                 if data.get('results'):
                     return data['results'][0]['id']
-            return None
-
-async def get_user_api_token(telegram_id: int) -> str:
-    """
-    Функция для получения API-токена пользователя по его Telegram ID.
-    Предполагается наличие эндпоинта /users/api/get_token_by_telegram_id/?telegram_id=<id>
-    """
-    API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
-    token_url = f"{API_URL}/users/api/get_token_by_telegram_id/?telegram_id={telegram_id}"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(token_url) as response:
-            if response.status == 200:
-                data = await response.json()
-                return data.get('token')
             return None

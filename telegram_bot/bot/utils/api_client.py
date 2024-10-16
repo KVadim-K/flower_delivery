@@ -1,10 +1,10 @@
 import aiohttp
 import os
-from dotenv import load_dotenv
+import logging
 
-load_dotenv()
+logger = logging.getLogger(__name__)
 
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
+API_URL = os.getenv('API_URL')
 
 class APIClient:
     def __init__(self, token: str):
@@ -22,9 +22,12 @@ class APIClient:
         }
         async with self.session.post(url, json=payload, headers=headers) as response:
             if response.status == 201:
-                return await response.json()
+                data = await response.json()
+                logger.info(f"Создан заказ: {data}")
+                return data
             else:
                 error = await response.text()
+                logger.error(f"Создание заказа не удалось: {error}")
                 raise Exception(f"Не удалось создать заказ: {error}")
 
     async def get_order_status(self, order_id):
@@ -35,9 +38,12 @@ class APIClient:
         }
         async with self.session.get(url, headers=headers) as response:
             if response.status == 200:
-                return await response.json()
+                data = await response.json()
+                logger.info(f"Получен статус заказа №{order_id}: {data}")
+                return data
             else:
                 error = await response.text()
+                logger.error(f"Получение статуса заказа не удалось: {error}")
                 raise Exception(f"Не удалось получить статус заказа: {error}")
 
     async def link_telegram_id(self, username: str, telegram_id: int):
@@ -55,9 +61,12 @@ class APIClient:
         }
         async with self.session.post(url, json=payload, headers=headers) as response:
             if response.status == 200:
-                return await response.json()
+                data = await response.json()
+                logger.info(f"Связано Telegram ID {telegram_id} с username '{username}'.")
+                return data
             else:
                 error = await response.text()
+                logger.error(f"Связывание Telegram ID не удалось: {error}")
                 raise Exception(f"Не удалось связать Telegram ID: {error}")
 
     async def get_user_orders(self):
@@ -72,9 +81,12 @@ class APIClient:
         }
         async with self.session.get(url, headers=headers) as response:
             if response.status == 200:
-                return await response.json()
+                data = await response.json()
+                logger.info(f"Получены заказы пользователя: {data}")
+                return data
             else:
                 error = await response.text()
+                logger.error(f"Получение заказов не удалось: {error}")
                 raise Exception(f"Не удалось получить заказы: {error}")
 
     async def close(self):
@@ -85,10 +97,19 @@ async def get_user_api_token(telegram_id: int) -> str:
     Функция для получения API-токена пользователя по его Telegram ID.
     Предполагается наличие эндпоинта /users/api/get_token_by_telegram_id/?telegram_id=<id>
     """
-    token_url = f"{API_URL}/users/api/get_token_by_telegram_id/?telegram_id={telegram_id}"
+    url = f"{API_URL}/users/api/get_token_by_telegram_id/?telegram_id={telegram_id}"
+    logger = logging.getLogger(__name__)
     async with aiohttp.ClientSession() as session:
-        async with session.get(token_url) as response:
+        async with session.get(url) as response:
             if response.status == 200:
                 data = await response.json()
-                return data.get('token')
-            return None
+                token = data.get('token')
+                if token:
+                    logger.info(f"Получен токен для пользователя {telegram_id}.")
+                else:
+                    logger.warning(f"Токен не найден для пользователя {telegram_id}.")
+                return token
+            else:
+                error = await response.text()
+                logger.error(f"Ошибка при получении токена для пользователя {telegram_id}: {error}")
+                return None
