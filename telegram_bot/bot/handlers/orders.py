@@ -8,11 +8,18 @@ from telegram_bot.bot.keyboards.inline import confirm_order_kb
 
 import logging
 import aiohttp
-import os
+import os  # Импортируем os для доступа к переменным окружения
 
 logger = logging.getLogger(__name__)
 
 router = Router()
+
+# Получаем API_URL из переменных окружения
+API_URL = os.getenv('API_URL')
+
+if not API_URL:
+    logger.error("API_URL не установлен в переменных окружения")
+    raise EnvironmentError("API_URL не установлен в переменных окружения")
 
 @router.message(Command(commands=["order"]))
 async def cmd_order(message: Message, state: FSMContext):

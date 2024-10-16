@@ -2,12 +2,14 @@ import logging
 import os
 import sys
 import asyncio
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from aiogram import Bot, Dispatcher
 from aiogram.client.bot import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
+
+# Добавление корневой директории проекта в sys.path для корректных импортов
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # Определение пути к .env файлу
 env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
@@ -31,7 +33,6 @@ from telegram_bot.bot.handlers.commands import router as commands_router
 from telegram_bot.bot.handlers.orders import router as orders_router
 from telegram_bot.bot.handlers.callbacks import router as callbacks_router  # Импортируйте роутер для callback
 from telegram_bot.bot.middlewares.logging_middleware import LoggingMiddleware
-
 
 # Настройка логирования
 logging.basicConfig(
