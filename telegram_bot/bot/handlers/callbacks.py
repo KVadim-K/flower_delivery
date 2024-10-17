@@ -1,3 +1,5 @@
+# telegram_bot/bot/handlers/callbacks.py
+
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup
 from aiogram.fsm.context import FSMContext
@@ -5,11 +7,17 @@ from telegram_bot.bot.keyboards.inline import navigation_kb, order_details_kb
 from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
 
 import logging
-import os
+import os  # Импортируем os для доступа к переменным окружения
 
 logger = logging.getLogger(__name__)
 
 router = Router()
+
+# Получаем ADMIN_API_TOKEN из переменных окружения
+ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')
+
+if not ADMIN_API_TOKEN:
+    logger.error("ADMIN_API_TOKEN не установлен в переменных окружения.")
 
 @router.callback_query(F.data == "confirm_link")
 async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
@@ -23,14 +31,13 @@ async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
     logger.info(f"Пользователь {telegram_id} подтверждает связывание с username '{username}'.")
 
     # Получение API-токена администратора для выполнения связывания
-    admin_token = os.getenv("ADMIN_API_TOKEN")
-    if not admin_token:
+    if not ADMIN_API_TOKEN:
         logger.error("ADMIN_API_TOKEN не установлен в переменных окружения.")
         await callback.message.answer("Связывание временно недоступно. Попробуйте позже.")
         await callback.answer()
         return
 
-    api_client = APIClient(token=admin_token)
+    api_client = APIClient(token=ADMIN_API_TOKEN)
 
     try:
         link_response = await api_client.link_telegram_id(username, telegram_id)
@@ -73,7 +80,6 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
     logger.info(f"Пользователь {telegram_id} подтверждает заказ №{order_id}.")
 
     # Здесь можно добавить логику подтверждения заказа через API Django
-    # Например, отправить запрос на подтверждение заказа
 
     await callback.message.edit_text(
         f"Ваш заказ №{order_id} подтверждён.",
@@ -108,8 +114,8 @@ async def create_order_callback(callback: CallbackQuery):
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} инициирует создание заказа.")
     await callback.message.edit_text(
-        "Пожалуйста, введите название цветка, который вы хотите заказать:",
-        reply_markup=InlineKeyboardMarkup()  # Убираем клавиатуру при вводе
+        "Пожалуйста, введите название цветка, который вы хотите заказать:"
+        # Удаляем reply_markup, чтобы убрать клавиатуру
     )
     await callback.answer()
     # Инициируем процесс создания заказа, отправляя команду /order
@@ -161,9 +167,9 @@ async def help_callback(callback: CallbackQuery):
         "Доступные команды:\n"
         "/start - Начать работу с ботом\n"
         "/help - Показать это сообщение\n"
-        "/link <username> - Связать Telegram аккаунт с учётной записью на сайте\n"
+        "/link &lt;username&gt; - Связать Telegram аккаунт с учётной записью на сайте\n"
         "/order - Создать новый заказ\n"
-        "/status <order_id> - Узнать статус заказа"
+        "/status &lt;order_id&gt; - Узнать статус заказа"
     )
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} запросил помощь.")
