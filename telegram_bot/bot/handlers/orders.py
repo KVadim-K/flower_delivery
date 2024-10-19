@@ -1,3 +1,5 @@
+# telegram_bot/bot/handlers/orders.py
+
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
@@ -117,3 +119,24 @@ async def get_product_id_by_name(product_name: str) -> int:
                     return product_id
             logger.error(f"Продукт '{product_name}' не найден. Ответ API: {response.status}")
             return None
+
+
+async def create_order(token, product_id, quantity):
+    url = f"{API_URL}/orders/api/create/"
+    headers = {
+        "Authorization": f"Token {token}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "order_items": [{"product": product_id, "quantity": quantity}]
+    }
+
+    # Логирование перед отправкой
+    logger.info(f"Отправка запроса на создание заказа. Токен: {token}, Продукт: {product_id}, Количество: {quantity}")
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, json=payload, headers=headers) as response:
+            logger.info(f"Ответ API: статус {response.status}")
+            data = await response.json()
+            logger.info(f"Данные ответа API: {data}")
+            return response.status, data

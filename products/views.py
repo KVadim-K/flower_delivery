@@ -1,7 +1,13 @@
+# products/views.py
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from django.shortcuts import render, get_object_or_404
 from .models import Product
 from reviews.models import Review
 from django.db.models import Avg
+from .serializers import ProductSerializer
 
 def product_list(request):
     products = Product.objects.all()
@@ -28,3 +34,9 @@ def product_detail(request, pk):
         'filled_stars': filled_stars,
         'empty_stars': empty_stars,
     })
+class ProductSearchAPIView(APIView):
+    def get(self, request):
+        search_query = request.GET.get('search', '')
+        products = Product.objects.filter(name__icontains=search_query)
+        serializer = ProductSerializer(products, many=True)
+        return Response({"results": serializer.data}, status=status.HTTP_200_OK)

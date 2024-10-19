@@ -1,13 +1,16 @@
 # telegram_bot/bot/handlers/callbacks.py
 
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup
+from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
-from telegram_bot.bot.keyboards.inline import navigation_kb, order_details_kb
+from telegram_bot.bot.keyboards.inline import (
+    navigation_kb,
+)
 from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
 
 import logging
-import os  # Импортируем os для доступа к переменным окружения
+import os  # Для доступа к переменным окружения
+import html  # Для экранирования
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +33,7 @@ async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
 
     logger.info(f"Пользователь {telegram_id} подтверждает связывание с username '{username}'.")
 
-    # Получение API-токена администратора для выполнения связывания
+    # Проверка наличия ADMIN_API_TOKEN
     if not ADMIN_API_TOKEN:
         logger.error("ADMIN_API_TOKEN не установлен в переменных окружения.")
         await callback.message.answer("Связывание временно недоступно. Попробуйте позже.")
@@ -40,15 +43,16 @@ async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
     api_client = APIClient(token=ADMIN_API_TOKEN)
 
     try:
-        link_response = await api_client.link_telegram_id(username, telegram_id)
+        await api_client.link_telegram_id(username, telegram_id)
         logger.info(f"Связывание аккаунта для username '{username}' прошло успешно.")
+        safe_username = html.escape(username)
         await callback.message.edit_text(
-            f"Ваш Telegram аккаунт успешно связан с учётной записью '{username}'.",
-            reply_markup=navigation_kb
+            f"Ваш Telegram аккаунт успешно связан с учётной записью '{safe_username}'.",
+            reply_markup=navigation_kb  # Используем корректно импортированную клавиатуру
         )
     except Exception as e:
         logger.error(f"Ошибка при связывании аккаунта: {e}")
-        await callback.message.answer(f"Произошла ошибка при связывании: {str(e)}")
+        await callback.message.answer("Произошла ошибка при связывании. Пожалуйста, попробуйте позже.")
     finally:
         await api_client.close()
 
@@ -63,7 +67,7 @@ async def cancel_link_callback(callback: CallbackQuery, state: FSMContext):
     logger.info(f"Пользователь {callback.from_user.id} отменил связывание аккаунта.")
     await callback.message.edit_text(
         "Связывание аккаунта отменено.",
-        reply_markup=navigation_kb
+        reply_markup=navigation_kb  # Используем корректно импортированную клавиатуру
     )
     await state.clear()
     await callback.answer()
@@ -83,7 +87,7 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         f"Ваш заказ №{order_id} подтверждён.",
-        reply_markup=navigation_kb
+        reply_markup=navigation_kb  # Используем корректно импортированную клавиатуру
     )
     await state.clear()
     await callback.answer()
@@ -101,7 +105,7 @@ async def cancel_order_callback(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         "Создание заказа отменено.",
-        reply_markup=navigation_kb
+        reply_markup=navigation_kb  # Используем корректно импортированную клавиатуру
     )
     await state.clear()
     await callback.answer()
@@ -115,7 +119,7 @@ async def create_order_callback(callback: CallbackQuery):
     logger.info(f"Пользователь {telegram_id} инициирует создание заказа.")
     await callback.message.edit_text(
         "Пожалуйста, введите название цветка, который вы хотите заказать:"
-        # Удаляем reply_markup, чтобы убрать клавиатуру
+        # Убираем клавиатуру, не передавая reply_markup
     )
     await callback.answer()
     # Инициируем процесс создания заказа, отправляя команду /order
@@ -152,7 +156,8 @@ async def view_orders_callback(callback: CallbackQuery):
             await callback.message.edit_text(orders_text, reply_markup=navigation_kb)
     except Exception as e:
         logger.error(f"Ошибка при получении заказов для пользователя {telegram_id}: {e}")
-        await callback.message.answer(f"Произошла ошибка при получении заказов: {str(e)}")
+        # Не отправляем сырые исключения пользователю
+        await callback.message.answer("Произошла ошибка при получении заказов. Пожалуйста, попробуйте позже.")
     finally:
         await api_client.close()
 

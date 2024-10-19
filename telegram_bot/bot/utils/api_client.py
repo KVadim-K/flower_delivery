@@ -1,3 +1,5 @@
+# telegram_bot/bot/utils/api_client.py
+
 import aiohttp
 import os
 import logging
@@ -113,3 +115,15 @@ async def get_user_api_token(telegram_id: int) -> str:
                 error = await response.text()
                 logger.error(f"Ошибка при получении токена для пользователя {telegram_id}: {error}")
                 return None
+async def get_product_id_by_name(product_name: str) -> int:
+    search_url = f"{API_URL}/products/api/search/?search={product_name}"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(search_url) as response:
+            if response.status == 200:
+                data = await response.json()
+                if data.get('results'):
+                    product_id = data['results'][0]['id']
+                    logger.info(f"Найден продукт '{product_name}' с ID {product_id}.")
+                    return product_id
+            logger.error(f"Продукт '{product_name}' не найден. Ответ API: {response.status}")
+            return None

@@ -1,3 +1,5 @@
+# orders/views.py
+
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from cart.models import Cart, CartItem
@@ -9,6 +11,10 @@ from .serializers import OrderSerializer, OrderStatusSerializer, OrderAnalyticsS
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from .models import Order  # Убедитесь, что модель Order существует
 
 # Ваши существующие представления
 
@@ -158,3 +164,34 @@ class OrderAnalyticsAPIView(APIView):
         }
         serializer = OrderAnalyticsSerializer(data)
         return Response(serializer.data)
+
+class CreateOrderAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        order_items = request.data.get('order_items', [])
+        if not order_items:
+            return Response({"error": "Необходимо указать order_items."}, status=status.HTTP_400_BAD_REQUEST)
+
+        order = Order.objects.create(user=request.user)
+        for item in order_items:
+            product_id = item.get('product')
+            quantity = item.get('quantity', 1)
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                return Response({"error": f"Продукт с id {product_id} не найден."}, status=status.HTTP_404_NOT_FOUND)
+
+            OrderItem.objects.create(order=order, product=product, quantity=quantity)
+
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UserOrdersAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        orders = Order.objects.filter(user=request.user)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
