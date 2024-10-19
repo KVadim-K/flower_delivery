@@ -1,4 +1,4 @@
-# flower_delivery/urls.py
+# telegram_bot/bot/utils/api_client.py
 
 import aiohttp
 import os

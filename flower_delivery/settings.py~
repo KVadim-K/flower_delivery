@@ -1,5 +1,3 @@
-# settings.py
-
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -52,7 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
-    # Ваши приложения
+    # Ваши приложения (будут созданы позже)
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
     'cart.apps.CartConfig',
@@ -73,7 +71,6 @@ MIDDLEWARE = [
     # Добавьте AccountMiddleware
     'allauth.account.middleware.AccountMiddleware',
 ]
-
 ROOT_URLCONF = 'flower_delivery.urls'
 
 TEMPLATES = [
@@ -92,6 +89,8 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'flower_delivery.wsgi.application'
 
 
@@ -104,6 +103,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 
 # Password validation
@@ -196,18 +196,10 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
-        'file': {  # Добавлен файловый обработчик для логирования
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'bot.log',
-        },
     },
-    'loggers': {
-        '': {  # Корневой логгер
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
     },
 }
 

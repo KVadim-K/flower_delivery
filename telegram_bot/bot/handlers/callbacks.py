@@ -3,9 +3,7 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
-from telegram_bot.bot.keyboards.inline import (
-    navigation_kb,
-)
+from telegram_bot.bot.keyboards.inline import navigation_kb, confirm_order_kb
 from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
 
 import logging
@@ -111,22 +109,19 @@ async def cancel_order_callback(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 @router.callback_query(F.data == "create_order")
-async def create_order_callback(callback: CallbackQuery):
+async def create_order_callback(callback: CallbackQuery, state: FSMContext):
     """
     Обработчик нажатия кнопки "Создать заказ"
     """
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} инициирует создание заказа.")
     await callback.message.edit_text(
-        "Пожалуйста, введите название цветка, который вы хотите заказать:"
-        # Убираем клавиатуру, не передавая reply_markup
+        "Пожалуйста, используйте команду /order для создания нового заказа."
     )
     await callback.answer()
-    # Инициируем процесс создания заказа, отправляя команду /order
-    await callback.message.answer("/order")
 
 @router.callback_query(F.data == "view_orders")
-async def view_orders_callback(callback: CallbackQuery):
+async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
     """
     Обработчик нажатия кнопки "Посмотреть заказы"
     """
@@ -137,7 +132,7 @@ async def view_orders_callback(callback: CallbackQuery):
     user_api_token = await get_user_api_token(telegram_id)
     if not user_api_token:
         logger.warning(f"Пользователь {telegram_id} не связан с учётной записью.")
-        await callback.message.answer("Ваш Telegram аккаунт не связан с учётной записью на сайте. Используйте /link для связывания.")
+        await callback.message.edit_text("Ваш Telegram аккаунт не связан с учётной записью на сайте. Используйте /link для связывания.")
         await callback.answer()
         return
 
@@ -157,14 +152,14 @@ async def view_orders_callback(callback: CallbackQuery):
     except Exception as e:
         logger.error(f"Ошибка при получении заказов для пользователя {telegram_id}: {e}")
         # Не отправляем сырые исключения пользователю
-        await callback.message.answer("Произошла ошибка при получении заказов. Пожалуйста, попробуйте позже.")
+        await callback.message.edit_text("Произошла ошибка при получении заказов. Пожалуйста, попробуйте позже.")
     finally:
         await api_client.close()
 
     await callback.answer()
 
 @router.callback_query(F.data == "help")
-async def help_callback(callback: CallbackQuery):
+async def help_callback(callback: CallbackQuery, state: FSMContext):
     """
     Обработчик нажатия кнопки "Помощь"
     """
@@ -172,9 +167,9 @@ async def help_callback(callback: CallbackQuery):
         "Доступные команды:\n"
         "/start - Начать работу с ботом\n"
         "/help - Показать это сообщение\n"
-        "/link &lt;username&gt; - Связать Telegram аккаунт с учётной записью на сайте\n"
+        "/link <username> - Связать Telegram аккаунт с учётной записью на сайте\n"
         "/order - Создать новый заказ\n"
-        "/status &lt;order_id&gt; - Узнать статус заказа"
+        "/status <order_id> - Узнать статус заказа"
     )
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} запросил помощь.")

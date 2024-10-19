@@ -9,25 +9,6 @@ from reviews.models import Review
 from django.db.models import Avg
 from .serializers import ProductSerializer
 
-class ProductListAPIView(APIView):
-    """
-    API View для получения списка всех доступных продуктов.
-    """
-    def get(self, request):
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response({"results": serializer.data}, status=status.HTTP_200_OK)
-
-class ProductSearchAPIView(APIView):
-    """
-    API View для поиска продуктов по названию.
-    """
-    def get(self, request):
-        search_query = request.GET.get('search', '')
-        products = Product.objects.filter(name__icontains=search_query)
-        serializer = ProductSerializer(products, many=True)
-        return Response({"results": serializer.data}, status=status.HTTP_200_OK)
-
 def product_list(request):
     products = Product.objects.all()
     return render(request, 'products/product_list.html', {'products': products})
@@ -53,3 +34,9 @@ def product_detail(request, pk):
         'filled_stars': filled_stars,
         'empty_stars': empty_stars,
     })
+class ProductSearchAPIView(APIView):
+    def get(self, request):
+        search_query = request.GET.get('search', '')
+        products = Product.objects.filter(name__icontains=search_query)
+        serializer = ProductSerializer(products, many=True)
+        return Response({"results": serializer.data}, status=status.HTTP_200_OK)

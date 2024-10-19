@@ -1,3 +1,5 @@
+# telegram_bot/bot/main.py
+
 import logging
 import os
 import sys
@@ -17,8 +19,9 @@ load_dotenv(dotenv_path=env_path)
 
 # Доступ к переменным
 API_URL = os.getenv('API_URL')
-ADMIN_TELEGRAM_IDS = os.getenv('ADMIN_TELEGRAM_IDS').split(',')
+ADMIN_TELEGRAM_IDS = os.getenv('ADMIN_TELEGRAM_IDS').split(',') if os.getenv('ADMIN_TELEGRAM_IDS') else []
 BOT_TOKEN = os.getenv('BOT_TOKEN')
+ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')
 
 if not BOT_TOKEN:
     logging.error("BOT_TOKEN не установлен в переменных окружения")
@@ -27,11 +30,12 @@ if not BOT_TOKEN:
 print(f"API_URL: {API_URL}")
 print(f"ADMIN_TELEGRAM_IDS: {ADMIN_TELEGRAM_IDS}")
 print(f"BOT_TOKEN: {BOT_TOKEN}")
+print(f"ADMIN_API_TOKEN: {ADMIN_API_TOKEN}")
 
 # Импорт роутеров и middleware
-from telegram_bot.bot.handlers.commands import router as commands_router
+from telegram_bot.bot.handlers.commands import router as commands_router  # Импортируем commands_router
 from telegram_bot.bot.handlers.orders import router as orders_router
-from telegram_bot.bot.handlers.callbacks import router as callbacks_router  # Импортируйте роутер для callback
+from telegram_bot.bot.handlers.callbacks import router as callbacks_router
 from telegram_bot.bot.middlewares.logging_middleware import LoggingMiddleware
 
 # Настройка логирования
@@ -56,9 +60,9 @@ async def main():
     dp.callback_query.middleware(LoggingMiddleware())  # Добавляем middleware для callback
 
     # Регистрация роутеров
-    dp.include_router(commands_router)
+    dp.include_router(commands_router)  # Регистрируем commands_router
     dp.include_router(orders_router)
-    dp.include_router(callbacks_router)  # Подключение роутера callback
+    dp.include_router(callbacks_router)
 
     try:
         logger.info("Запуск бота...")

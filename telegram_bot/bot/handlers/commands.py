@@ -1,3 +1,5 @@
+# telegram_bot/bot/handlers/commands.py
+
 from aiogram import Router, types
 from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
@@ -7,13 +9,9 @@ from telegram_bot.bot.utils.api_client import APIClient
 
 from aiogram.fsm.context import FSMContext
 
-from dotenv import load_dotenv
-
 import logging
 
 logger = logging.getLogger(__name__)
-
-load_dotenv()
 
 router = Router()
 
@@ -22,6 +20,7 @@ async def cmd_start_handler(message: Message):
     """
     Обработчик команды /start
     """
+    logger.info(f"Обработчик /start вызван пользователем {message.from_user.id}")
     await message.answer(
         f"Привет, {message.from_user.full_name}! Я бот FlowerDelivery.\n"
         "Используй кнопки ниже для взаимодействия.",
@@ -33,6 +32,7 @@ async def cmd_help_handler(message: Message):
     """
     Обработчик команды /help
     """
+    logger.info(f"Обработчик /help вызван пользователем {message.from_user.id}")
     await message.answer(
         "Доступные команды:\n"
         "/start - Начать работу с ботом\n"
@@ -47,6 +47,7 @@ async def cmd_link_handler(message: Message, command: CommandObject, state: FSMC
     """
     Обработчик команды /link для связывания Telegram ID с пользователем Django
     """
+    logger.info(f"Обработчик /link вызван пользователем {message.from_user.id} с аргументами: {command.args}")
     args = command.args
     if not args:
         await message.answer("Пожалуйста, укажите ваше имя пользователя на сайте. Пример: /link john_doe")

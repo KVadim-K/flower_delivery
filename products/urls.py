@@ -1,15 +1,13 @@
 # products/urls.py
 
 from django.urls import path
-from . import views
-from .views import ProductSearchAPIView
+from .views import ProductListAPIView, ProductSearchAPIView, product_list, product_detail
 
 app_name = 'products'
 
 urlpatterns = [
-    path('', views.product_list, name='product_list'),
-    path('<int:pk>/', views.product_detail, name='product_detail'),
+    path('', product_list, name='product_list'),
+    path('<int:pk>/', product_detail, name='product_detail'),
+    path('api/list/', ProductListAPIView.as_view(), name='api_product_list'),
     path('api/search/', ProductSearchAPIView.as_view(), name='api_product_search'),
-    # Другие маршруты...
 ]
-

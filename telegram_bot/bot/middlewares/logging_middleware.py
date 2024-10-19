@@ -6,15 +6,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class LoggingMiddleware(BaseMiddleware):
     async def __call__(self, handler, event, data):
-        if isinstance(event, Message):
-            logger.info(f"Получено сообщение от пользователя {event.from_user.id}: {event.text}")
-        elif isinstance(event, CallbackQuery):
-            logger.info(f"Получен CallbackQuery от пользователя {event.from_user.id}: {event.data}")
-        response = await handler(event, data)
-        if isinstance(event, Message):
-            logger.info(f"Отправлено сообщение пользователю {event.from_user.id}")
-        elif isinstance(event, CallbackQuery):
-            logger.info(f"Ответ на CallbackQuery для пользователя {event.from_user.id}")
-        return response
+        logger.info(f"Получено событие: {event}")
+        return await handler(event, data)
+
+    async def on_pre_process_message(self, message: Message, data: dict, *args):
+        logger.info(f"Получено сообщение от пользователя {message.from_user.id}: {message.text}")
+
+    async def on_pre_process_callback_query(self, callback: CallbackQuery, data: dict, *args):
+        logger.info(f"Получен callback от пользователя {callback.from_user.id}: {callback.data}")

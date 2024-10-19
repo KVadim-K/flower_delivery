@@ -13,6 +13,28 @@ class APIClient:
         self.token = token
         self.session = aiohttp.ClientSession()
 
+    async def get_products(self):
+        """
+        Получает список доступных продуктов через API.
+        Предполагается наличие эндпоинта /products/api/list/
+        """
+        url = f"{API_URL}/products/api/list/"
+        headers = {
+            'Authorization': f'Token {self.token}',
+            'Content-Type': 'application/json'
+        }
+        logger.debug(f"Отправка GET-запроса на {url} с заголовками: {headers}")
+        async with self.session.get(url, headers=headers) as response:
+            logger.debug(f"Ответ от API: статус {response.status}")
+            if response.status == 200:
+                data = await response.json()
+                logger.info(f"Получены продукты: {data}")
+                return data.get('results', [])
+            else:
+                error = await response.text()
+                logger.error(f"Получение продуктов не удалось: {error}")
+                raise Exception(f"Не удалось получить продукты: {error}")
+
     async def create_order(self, order_items):
         url = f"{API_URL}/orders/api/create/"
         headers = {
@@ -22,7 +44,9 @@ class APIClient:
         payload = {
             'order_items': order_items
         }
+        logger.debug(f"Отправка POST-запроса на {url} с заголовками: {headers} и данными: {payload}")
         async with self.session.post(url, json=payload, headers=headers) as response:
+            logger.debug(f"Ответ от API: статус {response.status}")
             if response.status == 201:
                 data = await response.json()
                 logger.info(f"Создан заказ: {data}")
@@ -38,7 +62,9 @@ class APIClient:
             'Authorization': f'Token {self.token}',
             'Content-Type': 'application/json'
         }
+        logger.debug(f"Отправка GET-запроса на {url} с заголовками: {headers}")
         async with self.session.get(url, headers=headers) as response:
+            logger.debug(f"Ответ от API: статус {response.status}")
             if response.status == 200:
                 data = await response.json()
                 logger.info(f"Получен статус заказа №{order_id}: {data}")
@@ -61,7 +87,9 @@ class APIClient:
             'username': username,
             'telegram_id': telegram_id
         }
+        logger.debug(f"Отправка POST-запроса на {url} с данными: {payload}")
         async with self.session.post(url, json=payload, headers=headers) as response:
+            logger.debug(f"Ответ от API: статус {response.status}")
             if response.status == 200:
                 data = await response.json()
                 logger.info(f"Связано Telegram ID {telegram_id} с username '{username}'.")
@@ -81,7 +109,9 @@ class APIClient:
             'Authorization': f'Token {self.token}',
             'Content-Type': 'application/json'
         }
+        logger.debug(f"Отправка GET-запроса на {url} с заголовками: {headers}")
         async with self.session.get(url, headers=headers) as response:
+            logger.debug(f"Ответ от API: статус {response.status}")
             if response.status == 200:
                 data = await response.json()
                 logger.info(f"Получены заказы пользователя: {data}")
@@ -102,12 +132,14 @@ async def get_user_api_token(telegram_id: int) -> str:
     url = f"{API_URL}/users/api/get_token_by_telegram_id/?telegram_id={telegram_id}"
     logger = logging.getLogger(__name__)
     async with aiohttp.ClientSession() as session:
+        logger.debug(f"Отправка GET-запроса на {url}")
         async with session.get(url) as response:
+            logger.debug(f"Ответ от API: статус {response.status}")
             if response.status == 200:
                 data = await response.json()
                 token = data.get('token')
                 if token:
-                    logger.info(f"Получен токен для пользователя {telegram_id}.")
+                    logger.info(f"Получен токен для пользователя {telegram_id}: {token}")
                 else:
                     logger.warning(f"Токен не найден для пользователя {telegram_id}.")
                 return token
@@ -115,10 +147,18 @@ async def get_user_api_token(telegram_id: int) -> str:
                 error = await response.text()
                 logger.error(f"Ошибка при получении токена для пользователя {telegram_id}: {error}")
                 return None
+
 async def get_product_id_by_name(product_name: str) -> int:
+    """
+    Функция для получения ID продукта по его названию через API Django.
+    Предполагается наличие эндпоинта /products/api/search/?search=<name>
+    """
     search_url = f"{API_URL}/products/api/search/?search={product_name}"
+    logger = logging.getLogger(__name__)
     async with aiohttp.ClientSession() as session:
+        logger.debug(f"Отправка GET-запроса на {search_url}")
         async with session.get(search_url) as response:
+            logger.debug(f"Ответ от API: статус {response.status}")
             if response.status == 200:
                 data = await response.json()
                 if data.get('results'):
