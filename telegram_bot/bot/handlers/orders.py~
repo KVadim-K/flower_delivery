@@ -9,8 +9,7 @@ from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
 from telegram_bot.bot.keyboards.inline import confirm_order_kb
 
 import logging
-import aiohttp
-import os  # Импортируем os для доступа к переменным окружения
+import os  # Для доступа к переменным окружения
 
 logger = logging.getLogger(__name__)
 

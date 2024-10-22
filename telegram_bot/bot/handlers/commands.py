@@ -24,7 +24,8 @@ async def cmd_start_handler(message: Message):
     await message.answer(
         f"Привет, {message.from_user.full_name}! Я бот FlowerDelivery.\n"
         "Используй кнопки ниже для взаимодействия.",
-        reply_markup=navigation_kb
+        reply_markup=navigation_kb,
+        parse_mode="HTML"  # Убедитесь, что parse_mode установлен
     )
 
 @router.message(Command(commands=["help"]))
@@ -37,9 +38,10 @@ async def cmd_help_handler(message: Message):
         "Доступные команды:\n"
         "/start - Начать работу с ботом\n"
         "/help - Показать это сообщение\n"
-        "/link <username> - Связать Telegram аккаунт с учётной записью на сайте\n"
+        "/link &lt;username&gt; - Связать Telegram аккаунт с учётной записью на сайте\n"
         "/order - Создать новый заказ\n"
-        "/status <order_id> - Узнать статус заказа"
+        "/status &lt;order_id&gt; - Узнать статус заказа",
+        parse_mode="HTML"  # Явно указываем parse_mode
     )
 
 @router.message(Command(commands=["link"]))

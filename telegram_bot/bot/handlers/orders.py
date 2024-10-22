@@ -5,7 +5,7 @@ from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, C
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from telegram_bot.bot.states.order_states import OrderStates
-from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
+from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token, get_product_id_by_name
 from telegram_bot.bot.keyboards.inline import confirm_order_kb
 
 import logging
@@ -49,10 +49,13 @@ async def cmd_order(message: Message, state: FSMContext):
             return
 
         # Создание инлайн-клавиатуры с товарами
-        keyboard = InlineKeyboardMarkup(row_width=1)
-        for product in products:
-            button = InlineKeyboardButton(text=product['name'], callback_data=f"select_product:{product['id']}")
-            keyboard.add(button)
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [InlineKeyboardButton(text=product['name'], callback_data=f"select_product:{product['id']}")]
+                for product in products
+            ],
+            row_width=1
+        )
 
         await message.answer("Выберите товар из списка ниже:", reply_markup=keyboard)
         await state.set_state(OrderStates.waiting_for_product_selection)

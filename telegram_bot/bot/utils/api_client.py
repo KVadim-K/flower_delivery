@@ -6,7 +6,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Загрузка переменных окружения
 API_URL = os.getenv('API_URL')
+ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')  # Добавляем загрузку ADMIN_API_TOKEN
 
 class APIClient:
     def __init__(self, token: str):
@@ -129,11 +131,18 @@ async def get_user_api_token(telegram_id: int) -> str:
     Функция для получения API-токена пользователя по его Telegram ID.
     Предполагается наличие эндпоинта /users/api/get_token_by_telegram_id/?telegram_id=<id>
     """
+    if not ADMIN_API_TOKEN:
+        logger.error("ADMIN_API_TOKEN не установлен в переменных окружения.")
+        return None
+
     url = f"{API_URL}/users/api/get_token_by_telegram_id/?telegram_id={telegram_id}"
-    logger = logging.getLogger(__name__)
+    headers = {
+        'Authorization': f'Token {ADMIN_API_TOKEN}',
+        'Content-Type': 'application/json'
+    }
+    logger.debug(f"Отправка GET-запроса на {url} с заголовками: {headers}")
     async with aiohttp.ClientSession() as session:
-        logger.debug(f"Отправка GET-запроса на {url}")
-        async with session.get(url) as response:
+        async with session.get(url, headers=headers) as response:
             logger.debug(f"Ответ от API: статус {response.status}")
             if response.status == 200:
                 data = await response.json()
@@ -155,9 +164,13 @@ async def get_product_id_by_name(product_name: str) -> int:
     """
     search_url = f"{API_URL}/products/api/search/?search={product_name}"
     logger = logging.getLogger(__name__)
+    headers = {
+        'Authorization': f'Token {ADMIN_API_TOKEN}',  # Добавляем заголовок, если требуется
+        'Content-Type': 'application/json'
+    }
     async with aiohttp.ClientSession() as session:
-        logger.debug(f"Отправка GET-запроса на {search_url}")
-        async with session.get(search_url) as response:
+        logger.debug(f"Отправка GET-запроса на {search_url} с заголовками: {headers}")
+        async with session.get(search_url, headers=headers) as response:
             logger.debug(f"Ответ от API: статус {response.status}")
             if response.status == 200:
                 data = await response.json()

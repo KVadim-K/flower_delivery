@@ -3,12 +3,7 @@
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
-from telegram_bot.bot.keyboards.inline import (
-    navigation_kb,
-    confirm_order_kb,
-    order_details_kb,
-    confirm_link_kb
-)
+from telegram_bot.bot.keyboards.inline import navigation_kb, confirm_order_kb
 from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
 
 import logging
@@ -172,9 +167,9 @@ async def help_callback(callback: CallbackQuery, state: FSMContext):
         "Доступные команды:\n"
         "/start - Начать работу с ботом\n"
         "/help - Показать это сообщение\n"
-        "/link <username> - Связать Telegram аккаунт с учётной записью на сайте\n"
+        "/link &lt;username&gt; - Связать Telegram аккаунт с учётной записью на сайте\n"
         "/order - Создать новый заказ\n"
-        "/status <order_id> - Узнать статус заказа"
+        "/status &lt;order_id&gt; - Узнать статус заказа"
     )
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} запросил помощь.")

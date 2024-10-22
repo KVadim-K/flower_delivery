@@ -167,13 +167,13 @@ async def help_callback(callback: CallbackQuery, state: FSMContext):
         "Доступные команды:\n"
         "/start - Начать работу с ботом\n"
         "/help - Показать это сообщение\n"
-        "/link <username> - Связать Telegram аккаунт с учётной записью на сайте\n"
+        "/link &lt;username&gt; - Связать Telegram аккаунт с учётной записью на сайте\n"
         "/order - Создать новый заказ\n"
-        "/status <order_id> - Узнать статус заказа"
+        "/status &lt;order_id&gt; - Узнать статус заказа"
     )
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} запросил помощь.")
-    await callback.message.edit_text(help_text, reply_markup=navigation_kb)
+    await callback.message.edit_text(help_text, reply_markup=navigation_kb, parse_mode="HTML")
     await callback.answer()
 
 @router.callback_query(F.data == "back_to_orders")
@@ -183,5 +183,5 @@ async def back_to_orders_callback(callback: CallbackQuery):
     """
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} вернулся к списку заказов.")
-    await callback.message.edit_text("Ваши заказы:", reply_markup=navigation_kb)
+    await callback.message.edit_text("Ваши заказы:", reply_markup=navigation_kb, parse_mode="HTML")
     await callback.answer()

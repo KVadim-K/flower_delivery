@@ -1,3 +1,5 @@
+# telegram_bot/bot/keyboards/inline.py
+
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 # Клавиатура для подтверждения заказа
