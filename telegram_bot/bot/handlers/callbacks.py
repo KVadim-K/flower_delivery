@@ -81,13 +81,24 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
 
     logger.info(f"Пользователь {telegram_id} подтверждает заказ №{order_id}.")
 
+    if not order_id:
+        logger.error(f"Не удалось получить order_id для пользователя {telegram_id}.")
+        await callback.message.edit_text(
+            "Произошла ошибка при подтверждении заказа. Пожалуйста, попробуйте позже.",
+            reply_markup=navigation_kb
+        )
+        await callback.answer()
+        return
+
     # Здесь можно добавить логику подтверждения заказа через API Django
+    # Например, отправить запрос на подтверждение заказа или обновление статуса
 
     await callback.message.edit_text(
         f"Ваш заказ №{order_id} подтверждён.",
         reply_markup=navigation_kb  # Используем корректно импортированную клавиатуру
     )
-    await state.clear()
+    await state.clear()  # Очищаем состояние после подтверждения
+    logger.info(f"Состояние пользователя {telegram_id} очищено после подтверждения заказа")
     await callback.answer()
 
 @router.callback_query(F.data == "cancel_order")

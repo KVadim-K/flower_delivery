@@ -43,8 +43,8 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler("bot.log"),
-        logging.StreamHandler()
+        logging.FileHandler("bot.log"),  # Логи сохраняются в файл bot.log
+        logging.StreamHandler()  # Логи выводятся в консоль
     ]
 )
 logger = logging.getLogger(__name__)

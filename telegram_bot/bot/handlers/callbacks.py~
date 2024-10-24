@@ -81,6 +81,15 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
 
     logger.info(f"Пользователь {telegram_id} подтверждает заказ №{order_id}.")
 
+    if not order_id:
+        logger.error(f"Не удалось получить order_id для пользователя {telegram_id}.")
+        await callback.message.edit_text(
+            "Произошла ошибка при подтверждении заказа. Пожалуйста, попробуйте позже.",
+            reply_markup=navigation_kb
+        )
+        await callback.answer()
+        return
+
     # Здесь можно добавить логику подтверждения заказа через API Django
 
     await callback.message.edit_text(
@@ -173,7 +182,7 @@ async def help_callback(callback: CallbackQuery, state: FSMContext):
     )
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} запросил помощь.")
-    await callback.message.edit_text(help_text, reply_markup=navigation_kb)
+    await callback.message.edit_text(help_text, reply_markup=navigation_kb, parse_mode="HTML")
     await callback.answer()
 
 @router.callback_query(F.data == "back_to_orders")
@@ -183,5 +192,5 @@ async def back_to_orders_callback(callback: CallbackQuery):
     """
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} вернулся к списку заказов.")
-    await callback.message.edit_text("Ваши заказы:", reply_markup=navigation_kb)
+    await callback.message.edit_text("Ваши заказы:", reply_markup=navigation_kb, parse_mode="HTML")
     await callback.answer()

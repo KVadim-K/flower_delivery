@@ -160,3 +160,4 @@ cython_debug/
 .idea/
 **/bot.log
 bot.log
+telegram_bot/bot.log~
