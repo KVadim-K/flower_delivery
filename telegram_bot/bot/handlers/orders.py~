@@ -154,5 +154,4 @@ async def process_quantity(message: Message, state: FSMContext):
         await api_client.close()
         logger.debug(f"APIClient для пользователя {telegram_id} закрыт")
 
-    # Удалите или закомментируйте эту строку
-    # await state.clear()
+    # Теперь состояние очищается только после подтверждения заказа

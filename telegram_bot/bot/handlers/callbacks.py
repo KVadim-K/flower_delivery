@@ -5,6 +5,7 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from telegram_bot.bot.keyboards.inline import navigation_kb, confirm_order_kb
 from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
+from telegram_bot.bot.handlers.orders import initiate_order_creation  # Импортируем функцию
 
 import logging
 import os  # Для доступа к переменным окружения
@@ -19,6 +20,7 @@ ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')
 
 if not ADMIN_API_TOKEN:
     logger.error("ADMIN_API_TOKEN не установлен в переменных окружения.")
+
 
 @router.callback_query(F.data == "confirm_link")
 async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
@@ -57,6 +59,7 @@ async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     await callback.answer()
 
+
 @router.callback_query(F.data == "cancel_link")
 async def cancel_link_callback(callback: CallbackQuery, state: FSMContext):
     """
@@ -69,6 +72,7 @@ async def cancel_link_callback(callback: CallbackQuery, state: FSMContext):
     )
     await state.clear()
     await callback.answer()
+
 
 @router.callback_query(F.data == "confirm_order")
 async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
@@ -101,6 +105,7 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
     logger.info(f"Состояние пользователя {telegram_id} очищено после подтверждения заказа")
     await callback.answer()
 
+
 @router.callback_query(F.data == "cancel_order")
 async def cancel_order_callback(callback: CallbackQuery, state: FSMContext):
     """
@@ -119,17 +124,17 @@ async def cancel_order_callback(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     await callback.answer()
 
+
 @router.callback_query(F.data == "create_order")
 async def create_order_callback(callback: CallbackQuery, state: FSMContext):
     """
     Обработчик нажатия кнопки "Создать заказ"
     """
     telegram_id = callback.from_user.id
-    logger.info(f"Пользователь {telegram_id} инициирует создание заказа.")
-    await callback.message.edit_text(
-        "Пожалуйста, используйте команду /order для создания нового заказа."
-    )
+    logger.info(f"Пользователь {telegram_id} инициирует создание заказа через кнопку.")
+    await initiate_order_creation(callback, state)  # Вызов функции создания заказа
     await callback.answer()
+
 
 @router.callback_query(F.data == "view_orders")
 async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
@@ -169,6 +174,7 @@ async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
 
     await callback.answer()
 
+
 @router.callback_query(F.data == "help")
 async def help_callback(callback: CallbackQuery, state: FSMContext):
     """
@@ -186,6 +192,7 @@ async def help_callback(callback: CallbackQuery, state: FSMContext):
     logger.info(f"Пользователь {telegram_id} запросил помощь.")
     await callback.message.edit_text(help_text, reply_markup=navigation_kb, parse_mode="HTML")
     await callback.answer()
+
 
 @router.callback_query(F.data == "back_to_orders")
 async def back_to_orders_callback(callback: CallbackQuery):
