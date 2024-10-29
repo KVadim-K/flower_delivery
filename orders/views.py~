@@ -1,4 +1,4 @@
-
+# orders/views.py
 
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
@@ -11,17 +11,15 @@ from .serializers import OrderSerializer, OrderStatusSerializer, OrderAnalyticsS
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum
-from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .models import Order  # Убедитесь, что модель Order существует
 
 # Ваши существующие представления
 
 @login_required
 def create_order(request, product_id=None):
     """
-    Создание заказа через веб-интерфейс.
+    Создание заказа через веб-интерфейс с указанием данных для доставки.
     """
     # Получаем корзину текущего пользователя или создаём новую
     cart, created = Cart.objects.get_or_create(user=request.user)
@@ -42,10 +40,29 @@ def create_order(request, product_id=None):
 
     # Обработка создания заказа при POST-запросе
     if request.method == 'POST':
+        # Получаем данные доставки из формы
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        postal_code = request.POST.get('postal_code')
+        phone_number = request.POST.get('phone_number')
+
+        # Валидация данных доставки (можно добавить более сложную валидацию)
+        if not all([address, city, postal_code, phone_number]):
+            context = {
+                'cart': cart,
+                'error': 'Пожалуйста, заполните все поля для доставки.'
+            }
+            return render(request, 'orders/create_order.html', context)
+
+        # Создаём заказ
         order = Order.objects.create(
             user=request.user,
             status='pending',
-            created_at=timezone.now()
+            created_at=timezone.now(),
+            address=address,
+            city=city,
+            postal_code=postal_code,
+            phone_number=phone_number
         )
 
         # Переносим товары из корзины в заказ
@@ -125,7 +142,7 @@ def update_cart(request):
     return redirect('cart:cart_detail')
 
 
-# Добавление API-представления для создания заказа
+# API-представления
 
 class CreateOrderAPIView(generics.CreateAPIView):
     """
@@ -138,7 +155,7 @@ class CreateOrderAPIView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-# API-представление для проверки статуса заказа
+
 class OrderStatusAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -147,7 +164,7 @@ class OrderStatusAPIView(APIView):
         serializer = OrderStatusSerializer(order)
         return Response(serializer.data)
 
-# API-представление для аналитики заказов
+
 class OrderAnalyticsAPIView(APIView):
     permission_classes = [permissions.IsAdminUser]
 
@@ -165,28 +182,6 @@ class OrderAnalyticsAPIView(APIView):
         serializer = OrderAnalyticsSerializer(data)
         return Response(serializer.data)
 
-class CreateOrderAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        order_items = request.data.get('order_items', [])
-        if not order_items:
-            return Response({"error": "Необходимо указать order_items."}, status=status.HTTP_400_BAD_REQUEST)
-
-        order = Order.objects.create(user=request.user)
-        for item in order_items:
-            product_id = item.get('product')
-            quantity = item.get('quantity', 1)
-            try:
-                product = Product.objects.get(id=product_id)
-            except Product.DoesNotExist:
-                return Response({"error": f"Продукт с id {product_id} не найден."}, status=status.HTTP_404_NOT_FOUND)
-
-            OrderItem.objects.create(order=order, product=product, quantity=quantity)
-
-        serializer = OrderSerializer(order)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 class UserOrdersAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -194,4 +189,4 @@ class UserOrdersAPIView(APIView):
     def get(self, request):
         orders = Order.objects.filter(user=request.user)
         serializer = OrderSerializer(orders, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
