@@ -8,10 +8,10 @@ from cart.models import CartItem
 
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('processing', 'Processing'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
+        ('pending', 'В ожидании'),
+        ('processing', 'В обработке'),
+        ('completed', 'Завершён'),
+        ('cancelled', 'Отменён'),
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
