@@ -37,14 +37,21 @@ class APIClient:
                 logger.error(f"Получение продуктов не удалось: {error}")
                 raise Exception(f"Не удалось получить продукты: {error}")
 
-    async def create_order(self, order_items):
+    async def create_order(self, order_items, address, city, postal_code, phone_number):
+        """
+        Создаёт новый заказ через API с данными доставки.
+        """
         url = f"{API_URL}/orders/api/create/"
         headers = {
             'Authorization': f'Token {self.token}',
             'Content-Type': 'application/json'
         }
         payload = {
-            'order_items': order_items
+            'order_items': order_items,
+            'address': address,
+            'city': city,
+            'postal_code': postal_code,
+            'phone_number': phone_number
         }
         logger.debug(f"Отправка POST-запроса на {url} с заголовками: {headers} и данными: {payload}")
         async with self.session.post(url, json=payload, headers=headers) as response:

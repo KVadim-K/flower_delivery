@@ -1,5 +1,3 @@
-# telegram_bot/bot/keyboards/default.py
-
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 # Опционально: если вы хотите использовать стандартные клавиатуры

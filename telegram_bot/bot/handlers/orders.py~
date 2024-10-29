@@ -22,30 +22,44 @@ if not API_URL:
     logger.error("API_URL не установлен в переменных окружения")
     raise EnvironmentError("API_URL не установлен в переменных окружения")
 
-@router.message(Command(commands=["order"]))
-async def cmd_order(message: Message, state: FSMContext):
-    """
-    Обработчик команды /order — инициирует процесс создания заказа
-    """
-    telegram_id = message.from_user.id
-    logger.info(f"Пользователь {telegram_id} инициировал создание заказа.")
-    await message.answer("Загрузка доступных товаров...")
 
-    # Проверка наличия активного заказа
-    current_state = await state.get_state()
-    if current_state and current_state != OrderStates.waiting_for_product_selection.state and current_state != OrderStates.waiting_for_quantity.state:
-        logger.info(f"Пользователь {telegram_id} пытается создать новый заказ, но уже есть активный заказ.")
-        await message.answer(
-            "У вас уже есть активный заказ. Пожалуйста, завершите его или отмените перед созданием нового.")
+async def initiate_order_creation(source, state: FSMContext):
+    """
+    Общая функция для инициации создания заказа, вызываемая из команды /order и кнопки "Создать заказ"
+    :param source: объект Message или CallbackQuery
+    :param state: объект FSMContext
+    """
+    if isinstance(source, Message):
+        send_message = source.answer
+        user = source.from_user
+    elif isinstance(source, CallbackQuery):
+        send_message = source.message.edit_text
+        user = source.from_user
+    else:
+        logger.error("Неизвестный тип источника для инициирования заказа")
         return
 
-    await message.answer("Загрузка доступных товаров...")
+    telegram_id = user.id
+    logger.debug(f"Инициация создания заказа для пользователя {telegram_id}")
+    await send_message("Загрузка доступных товаров...")
 
     # Получение API-токена пользователя
     user_api_token = await get_user_api_token(telegram_id)
     if not user_api_token:
         logger.warning(f"Пользователь {telegram_id} не связан с учётной записью.")
-        await message.answer("Ваш Telegram аккаунт не связан с учётной записью на сайте. Используйте /link для связывания.")
+        await send_message("Ваш Telegram аккаунт не связан с учётной записью на сайте. Используйте /link для связывания.")
+        return
+
+    # Проверка наличия активного заказа
+    current_state = await state.get_state()
+    if current_state and current_state not in [
+        OrderStates.waiting_for_product_selection.state,
+        OrderStates.waiting_for_quantity.state,
+    ]:
+        logger.info(f"Пользователь {telegram_id} пытается создать новый заказ, но уже есть активный заказ.")
+        await send_message(
+            "У вас уже есть активный заказ. Пожалуйста, завершите его или отмените перед созданием нового."
+        )
         return
 
     api_client = APIClient(token=user_api_token)
@@ -57,28 +71,42 @@ async def cmd_order(message: Message, state: FSMContext):
         logger.debug(f"Получен список продуктов: {products}")
         if not products:
             logger.info(f"У пользователя {telegram_id} нет доступных товаров.")
-            await message.answer("На данный момент нет доступных товаров для заказа.")
+            await send_message("На данный момент нет доступных товаров для заказа.")
             return
 
         # Создание инлайн-клавиатуры с товарами
         keyboard = InlineKeyboardMarkup(
             inline_keyboard=[
-                [InlineKeyboardButton(text=product['name'], callback_data=f"select_product:{product['id']}")]
+                [
+                    InlineKeyboardButton(
+                        text=product['name'],
+                        callback_data=f"select_product:{product['id']}"
+                    )
+                ]
                 for product in products
             ],
             row_width=1
         )
 
         logger.debug(f"Инлайн-клавиатура с продуктами создана для пользователя {telegram_id}")
-        await message.answer("Выберите товар из списка ниже:", reply_markup=keyboard)
+        await send_message("Выберите товар из списка ниже:", reply_markup=keyboard)
         await state.set_state(OrderStates.waiting_for_product_selection)
         logger.info(f"Состояние пользователя {telegram_id} установлено на waiting_for_product_selection")
     except Exception as e:
         logger.exception(f"Ошибка при получении товаров для пользователя {telegram_id}: {e}")
-        await message.answer("Произошла ошибка при получении списка товаров. Пожалуйста, попробуйте позже.")
+        await send_message("Произошла ошибка при получении списка товаров. Пожалуйста, попробуйте позже.")
     finally:
         await api_client.close()
         logger.debug(f"APIClient для пользователя {telegram_id} закрыт")
+
+
+@router.message(Command(commands=["order"]))
+async def cmd_order(message: Message, state: FSMContext):
+    """
+    Обработчик команды /order — инициирует процесс создания заказа
+    """
+    await initiate_order_creation(message, state)
+
 
 @router.callback_query(F.data.startswith("select_product:"))
 async def select_product_callback(callback: CallbackQuery, state: FSMContext):
@@ -94,6 +122,7 @@ async def select_product_callback(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text("Введите количество:")
     await callback.answer()
+
 
 @router.message(OrderStates.waiting_for_quantity, F.text)
 async def process_quantity(message: Message, state: FSMContext):
@@ -138,17 +167,18 @@ async def process_quantity(message: Message, state: FSMContext):
             await message.answer("Произошла ошибка при создании заказа. Пожалуйста, попробуйте позже.")
             return
 
-        # Сохраняем order_id в состоянии для дальнейшего подтверждения (если необходимо)
+        # Сохраняем order_id в состоянии для дальнейшего подтверждения
         await state.update_data(order_id=order_response['id'])
         logger.info(f"Заказ №{order_response['id']} успешно создан для пользователя {telegram_id}.")
+
         await message.answer(
             f"Ваш заказ №{order_response['id']} успешно создан!",
-            reply_markup=confirm_order_kb  # Добавляем клавиатуру с кнопками подтверждения (если требуется)
+            reply_markup=confirm_order_kb  # Добавляем клавиатуру с кнопками подтверждения
         )
         await state.set_state(OrderStates.active_order)  # Устанавливаем состояние активного заказа
         logger.info(f"Состояние пользователя {telegram_id} установлено на active_order")
     except Exception as e:
-        logger.error(f"Ошибка при создании заказа для пользователя {telegram_id}: {e}")
+        logger.exception(f"Ошибка при создании заказа для пользователя {telegram_id}: {e}")
         await message.answer(f"Произошла ошибка при создании заказа: {str(e)}")
     finally:
         await api_client.close()
