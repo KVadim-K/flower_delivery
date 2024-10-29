@@ -188,7 +188,8 @@ async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
         else:
             orders_text = "Ваши заказы:\n"
             for order in orders:
-                orders_text += f"Заказ №{order['id']} - Статус: {order['status']}\n"
+                status_display = order.get('status_display', 'Неизвестен')
+                orders_text += f"Заказ №{order['id']} - Статус: {status_display}\n"
             logger.info(f"Заказы для пользователя {telegram_id}: {orders}")
             await callback.message.edit_text(
                 orders_text,

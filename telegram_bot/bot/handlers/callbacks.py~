@@ -50,10 +50,13 @@ async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
         await api_client.link_telegram_id(username, telegram_id)
         logger.info(f"Связывание аккаунта для username '{username}' прошло успешно.")
         safe_username = html.escape(username)
-        await callback.message.edit_text(
+        welcome_message = (
             f"Ваш Telegram аккаунт успешно связан с учётной записью '{safe_username}'.\n"
             f"Привет, {callback.from_user.full_name}! Я бот FlowerDelivery.\n"
-            "Используй кнопки ниже для взаимодействия.",
+            "Используй кнопки ниже для взаимодействия."
+        )
+        await callback.message.edit_text(
+            welcome_message,
             reply_markup=navigation_kb,  # Используем корректно импортированную клавиатуру
             parse_mode="HTML"  # Добавили parse_mode
         )
@@ -215,9 +218,9 @@ async def help_callback(callback: CallbackQuery, state: FSMContext):
         "Доступные команды:\n"
         "/start - Начать работу с ботом\n"
         "/help - Показать это сообщение\n"
-        "/link &lt;username&gt; - Связать Telegram аккаунт с учётной записью на сайте. Используйте /link <username>\n"
+        "/link <code>&lt;username&gt;</code> - Связать Telegram аккаунт с учётной записью на сайте\n"
         "/order - Создать новый заказ\n"
-        "/status &lt;order_id&gt; - Узнать статус заказа"
+        "/status <code>&lt;order_id&gt;</code> - Узнать статус заказа"
     )
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} запросил помощь.")

@@ -145,12 +145,12 @@ async def cmd_status(message: Message, state: FSMContext):
 
     try:
         status_response = await api_client.get_order_status(order_id)
-        status = status_response.get('status', 'Неизвестен')
+        status_display = status_response.get('status_display', 'Неизвестен')
         await message.answer(
-            f"Статус вашего заказа №{order_id}: {status}",
+            f"Статус вашего заказа №{order_id}: {status_display}",
             parse_mode="HTML"
         )
-        logger.info(f"Пользователь {telegram_id} получил статус заказа №{order_id}: {status}")
+        logger.info(f"Пользователь {telegram_id} получил статус заказа №{order_id}: {status_display}")
     except Exception as e:
         logger.error(f"Ошибка при получении статуса заказа для пользователя {telegram_id}: {e}")
         await message.answer("Произошла ошибка при получении статуса заказа. Пожалуйста, попробуйте позже.",

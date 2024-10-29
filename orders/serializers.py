@@ -5,7 +5,6 @@ from .models import Order, OrderItem
 from products.models import Product
 from django.utils import timezone
 
-
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
     product_price = serializers.DecimalField(
@@ -18,7 +17,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ['product', 'product_name', 'product_price', 'quantity']
-
 
 class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True, write_only=True)
@@ -72,14 +70,12 @@ class OrderSerializer(serializers.ModelSerializer):
         order.save()
         return order
 
-
 class OrderStatusSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     class Meta:
         model = Order
         fields = ['id', 'status', 'status_display', 'created_at']
-
 
 class OrderAnalyticsSerializer(serializers.Serializer):
     total_orders = serializers.IntegerField()
