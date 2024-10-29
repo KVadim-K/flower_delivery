@@ -1,3 +1,5 @@
+/* orders/static/orders/orders.css */
+
 /* Общий стиль для контейнеров */
 .container {
     max-width: 800px;
@@ -111,6 +113,27 @@
 
 .order-confirmation .btn-confirm:hover {
     background-color: #43a047;
+}
+
+/* Стили для информации о доставке */
+.delivery-info {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.delivery-info h4 {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.delivery-info p {
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
 }
 
 /* Адаптивность */

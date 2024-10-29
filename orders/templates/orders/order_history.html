@@ -15,12 +15,27 @@
         {% for order in orders %}
             <div class="order-item">
                 <h3>Заказ №{{ order.id }} - Статус: {{ order.get_status_display }} - {{ order.created_at|date:"d.m.Y H:i" }}</h3>
+
+                <!-- Секция с информацией о доставке -->
+                <div class="delivery-info">
+                    <h4>Данные для доставки:</h4>
+                    <p><strong>Адрес:</strong> {{ order.address }}</p>
+                    <p><strong>Город:</strong> {{ order.city }}</p>
+                    <p><strong>Почтовый индекс:</strong> {{ order.postal_code }}</p>
+                    <p><strong>Телефон:</strong> {{ order.phone_number }}</p>
+                </div>
+
+                <!-- Секция с товарами заказа -->
                 <ul>
                     {% for item in order.order_items.all %}
                         <li>{{ item.product.name }} - {{ item.quantity }} x {{ item.product.price }} ₽ = {{ item.quantity|multiply:item.product.price }} ₽</li>
                     {% endfor %}
                 </ul>
-                <p class="order-total">Общая сумма заказа: {{ order.total_price }} ₽</p>
+
+                <!-- Общая сумма заказа -->
+                <p class="order-total"><strong>Общая сумма заказа:</strong> {{ order.total_price }} ₽</p>
+
+                <!-- Кнопка для повторного заказа -->
                 <a href="{% url 'orders:reorder' order.id %}" class="btn">Повторить Заказ</a>
             </div>
         {% endfor %}
