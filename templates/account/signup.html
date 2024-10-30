@@ -47,26 +47,6 @@
             {% endif %}
         </div>
         <div class="mb-3">
-            <label for="id_address" class="form-label">Адрес</label>
-            {{ form.address }}
-            {% if form.address.errors %}
-                <div class="text-danger">
-                    {{ form.address.errors }}
-                </div>
-            {% endif %}
-        </div>
-        {% if form.telegram_id %}
-            <div class="mb-3">
-                <label for="id_telegram_id" class="form-label">Telegram ID</label>
-                {{ form.telegram_id }}
-                {% if form.telegram_id.errors %}
-                    <div class="text-danger">
-                        {{ form.telegram_id.errors }}
-                    </div>
-                {% endif %}
-            </div>
-        {% endif %}
-        <div class="mb-3">
             <label for="id_password1" class="form-label">Пароль</label>
             {{ form.password1 }}
             {% if form.password1.errors %}
