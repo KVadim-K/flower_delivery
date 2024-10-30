@@ -18,10 +18,15 @@ router = Router()
 
 # Получаем API_URL из переменных окружения
 API_URL = os.getenv('API_URL')
+SITE_URL = os.getenv('SITE_URL')  # Для формирования ссылки на регистрацию
 
 if not API_URL:
     logger.error("API_URL не установлен в переменных окружения")
     raise EnvironmentError("API_URL не установлен в переменных окружения")
+
+if not SITE_URL:
+    logger.error("SITE_URL не установлен в переменных окружения")
+    raise EnvironmentError("SITE_URL не установлен в переменных окружения")
 
 
 async def initiate_order_creation(source, state: FSMContext):
@@ -48,7 +53,14 @@ async def initiate_order_creation(source, state: FSMContext):
     user_api_token = await get_user_api_token(telegram_id)
     if not user_api_token:
         logger.warning(f"Пользователь {telegram_id} не связан с учётной записью.")
-        await send_message("Ваш Telegram аккаунт не связан с учётной записью на сайте. Используйте /link для связывания.")
+        registration_link = f"{SITE_URL}/register/"
+        await send_message(
+            f"Ваш Telegram аккаунт не связан с учётной записью на сайте.\n"
+            f"Пожалуйста, зарегистрируйтесь на сайте: [Регистрация]({registration_link})\n"
+            "После регистрации используйте команду /link для связывания аккаунтов.",
+            parse_mode="Markdown",
+            disable_web_page_preview=True
+        )
         return
 
     # Проверка наличия активного заказа
