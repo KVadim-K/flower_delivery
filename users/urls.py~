@@ -1,10 +1,16 @@
 # users/urls.py
 
 from django.urls import path
-from . import views
-from .views import GetTokenByTelegramIDAPIView
+from .views import (
+    GetTokenByTelegramIDAPIView,
+    LinkTelegramIDAPIView,
+    RegisterView,
+)
+
+app_name = 'users'
 
 urlpatterns = [
-    path('api/link_telegram_id/', views.link_telegram_id, name='link_telegram_id'),
-    path('api/get_token_by_telegram_id/', views.get_token_by_telegram_id, name='get_token_by_telegram_id'),
+    path('api/link_telegram_id/', LinkTelegramIDAPIView.as_view(), name='link_telegram_id'),
+    path('api/get_token_by_telegram_id/', GetTokenByTelegramIDAPIView.as_view(), name='get_token_by_telegram_id'),
+    path('register/', RegisterView.as_view(), name='register'),  # Добавленный путь для регистрации
 ]

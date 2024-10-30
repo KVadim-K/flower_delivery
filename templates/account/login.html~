@@ -1,14 +1,18 @@
-{% extends "base.html" %}
-{% load socialaccount %}
+<!-- templates/account/login.html -->
 
-{% block title %}Вход{% endblock %}
-
-{% block content %}
-<h2>Вход</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Войти</button>
-</form>
-<p>Нет аккаунта? <a href="{% url 'account_signup' %}">Зарегистрируйтесь</a></p>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form method="post" action="{% url 'account_login' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Log in</button>
+    </form>
+    <p>Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a></p>
+</body>
+</html>

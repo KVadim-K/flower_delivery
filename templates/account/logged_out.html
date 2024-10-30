@@ -1,11 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Logout</title>
-</head>
-<body>
-    <h1>Вы успешно вышли из системы</h1>
-    <p><a href="{% url 'account_login' %}">Войти снова</a></p>
-</body>
-</html>
+<!-- templates/account/logged_out.html -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Выход{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Вы успешно вышли из системы</h2>
+                    <p class="card-text">Вы можете войти снова, используя свою учетную запись.</p>
+                    <a href="{% url 'account_login' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-sign-in-alt"></i> Войти снова
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

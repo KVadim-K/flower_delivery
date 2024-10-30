@@ -1,3 +1,5 @@
+<!-- templates/base.html -->
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
@@ -64,5 +66,6 @@
     </footer>
 
    <script src="{% static 'js/rating.js' %}"></script>
+   <script src="{% static 'js/particles.js' %}"></script>
 </body>
 </html>

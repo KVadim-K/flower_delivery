@@ -1,0 +1,12 @@
+<!-- templates/account/logged_out.html -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Выход{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h2 class="mb-4">Вы успешно вышли из системы</h2>
+    <p><a href="{% url 'account_login' %}" class="btn btn-primary">Войти снова</a></p>
+</div>
+{% endblock %}

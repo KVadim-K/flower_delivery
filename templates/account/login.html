@@ -1,16 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
-<body>
-    <h2>Login</h2>
-    <form method="post" action="{% url 'account_login' %}">
+<!-- templates/account/login.html -->
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Вход</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'account_login' %}" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Log in</button>
+        <div class="mb-3">
+            <label for="id_login" class="form-label">Имя пользователя или Электронная почта</label>
+            {{ form.login }}
+            {% if form.login.errors %}
+                <div class="text-danger">
+                    {{ form.login.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="id_password" class="form-label">Пароль</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="text-danger">
+                    {{ form.password.errors }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="mb-3 form-check">
+            {{ form.remember }}
+            <label class="form-check-label" for="id_remember">Запомнить меня</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Войти</button>
     </form>
-    <p>Don't have an account? <a href="{% url 'account_signup' %}">Sign up</a></p>
-</body>
-</html>
+    <hr>
+    <p>Еще нет аккаунта? <a href="{% url 'account_signup' %}">Зарегистрируйтесь</a>.</p>
+</div>
+{% endblock %}
