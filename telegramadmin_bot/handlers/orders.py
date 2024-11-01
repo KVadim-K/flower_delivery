@@ -13,10 +13,8 @@ logger = logging.getLogger('telegramadmin_bot')
 
 router = Router()
 
-
 async def is_admin(user_id):
     return user_id in ADMIN_TELEGRAM_IDS
-
 
 @router.message(Command(commands=['orders']))
 async def list_orders(message: types.Message):

@@ -3,8 +3,7 @@
 import logging
 import asyncio
 import os
-from aiogram import Bot, Dispatcher
-from aiogram.router import Router
+from aiogram import Bot, Dispatcher, Router
 from telegramadmin_bot.config import ADMIN_BOT_TOKEN
 from telegramadmin_bot.handlers import orders, analytics  # Импортируем обработчики
 
@@ -19,9 +18,10 @@ logger = logging.getLogger('telegramadmin_bot')
 
 # Инициализация бота и диспетчера
 bot = Bot(token=ADMIN_BOT_TOKEN)
+router = Router()  # Создаем основной маршрутизатор
 dispatcher = Dispatcher()
 
-# Включаем обработчики
+# Подключаем маршрутизаторы из обработчиков
 dispatcher.include_router(orders.router)
 dispatcher.include_router(analytics.router)
 
