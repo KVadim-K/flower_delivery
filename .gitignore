@@ -161,3 +161,4 @@ cython_debug/
 **/bot.log
 bot.log
 telegram_bot/bot.log~
+*.log~

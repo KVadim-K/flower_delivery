@@ -142,19 +142,36 @@ async def callback_handler(callback_query: types.CallbackQuery):
 
 @router.callback_query(lambda call: call.data and call.data.startswith('set_status_'))
 async def set_status(callback_query: types.CallbackQuery):
+    # Логирование полученных данных
+    logger.info(f"Получено set_status callback_data: {repr(callback_query.data)}")
+
     if not await is_admin(callback_query.from_user.id):
         await callback_query.answer("У вас нет доступа к этому боту.", show_alert=True)
         return
 
-    try:
-        prefix, order_id_str, new_status = callback_query.data.split('_', 2)
-        if not order_id_str.isdigit():
-            raise ValueError("Неверный ID заказа")
-        order_id = int(order_id_str)
-    except (ValueError, IndexError) as e:
-        logger.error(f"Ошибка парсинга callback_data: {callback_query.data}, {str(e)}")
+    # Удаление возможных невидимых символов и пробелов
+    clean_data = callback_query.data.strip()
+    logger.info(f"Обработанный callback_data после очистки: {repr(clean_data)}")
+
+    # Используем регулярное выражение для корректного разбора структуры
+    import re
+    match = re.match(r"^set_status_(\d+)_(\w+)$", clean_data)
+
+    if not match:
+        logger.error(f"Некорректный формат callback_data: {clean_data} (не соответствует шаблону)")
         await callback_query.answer("Неверный формат данных.", show_alert=True)
         return
+
+    order_id_str, new_status = match.groups()
+    logger.info(f"Извлеченные данные: order_id_str={order_id_str}, new_status={new_status}")
+
+    # Проверяем, является ли order_id числом
+    if not order_id_str.isdigit():
+        logger.error(f"Некорректный ID заказа: {order_id_str}")
+        await callback_query.answer("Некорректный ID заказа.", show_alert=True)
+        return
+
+    order_id = int(order_id_str)
 
     try:
         order = await sync_to_async(Order.objects.get)(id=order_id)
@@ -163,6 +180,7 @@ async def set_status(callback_query: types.CallbackQuery):
         await callback_query.answer("Заказ не найден.", show_alert=True)
         return
 
+    # Проверяем корректность статуса
     if new_status not in dict(Order.STATUS_CHOICES).keys():
         logger.error(f"Неверный статус: {new_status}")
         await callback_query.answer("Неверный статус.", show_alert=True)
@@ -174,9 +192,7 @@ async def set_status(callback_query: types.CallbackQuery):
     order.status = new_status
     await sync_to_async(order.save)()
 
-    logger.info(
-        f"Order ID {order.id} status changed from {old_status_display} to {new_status_display}"
-    )
+    logger.info(f"Статус заказа ID {order.id} изменен с {old_status_display} на {new_status_display}")
 
     await callback_query.message.reply(
         f"Статус заказа ID {order.id} изменен с {old_status_display} на {new_status_display}.",
