@@ -193,35 +193,49 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
-        'admin_bot_file': {  # Отдельный файловый обработчик для admin_bot
+        'admin_bot_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'admin_bot.log',
+            'encoding': 'utf-8',  # Добавлено для корректного отображения UTF-8
         },
-        'telegram_bot_file': {  # Файловый обработчик для существующего бота
+        'telegram_bot_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'telegram_bot.log',
+            'encoding': 'utf-8',  # Добавлено для корректного отображения UTF-8
+        },
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'error.log',
+            'encoding': 'utf-8',  # Добавлено для корректного отображения UTF-8
         },
     },
     'loggers': {
-        'telegramadmin_bot': {  # Логгер для admin_bot
-            'handlers': ['console', 'admin_bot_file'],
+        'telegramadmin_bot': {
+            'handlers': ['console', 'admin_bot_file', 'error_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
-        'telegram_bot': {  # Логгер для существующего бота
-            'handlers': ['console', 'telegram_bot_file'],
+        'telegram_bot': {
+            'handlers': ['console', 'telegram_bot_file', 'error_file'],
             'level': 'DEBUG',
             'propagate': False,
         },
-        '': {  # Корневой логгер
-            'handlers': ['console'],
+        'django': {
+            'handlers': ['console', 'error_file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        '': {
+            'handlers': ['console', 'error_file'],
             'level': 'INFO',
             'propagate': True,
         },
     },
 }
+
 
 # Загрузка переменных окружения
 print(f"API_URL from settings: {API_URL}")

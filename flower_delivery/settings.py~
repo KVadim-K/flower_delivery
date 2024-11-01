@@ -186,15 +186,6 @@ LOGOUT_REDIRECT_URL = '/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.example.com'  # Замените на SMTP-сервер вашего почтового провайдера
-# EMAIL_PORT = 587  # Порт для TLS
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'your_email@example.com'  # Замените на ваш email
-# EMAIL_HOST_PASSWORD = 'your_email_password'  # Замените на ваш пароль
-# DEFAULT_FROM_EMAIL = 'your_email@example.com'
-
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -202,16 +193,41 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
-        'file': {  # Добавлен файловый обработчик для логирования
+        'admin_bot_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'bot.log',
+            'filename': BASE_DIR / 'admin_bot.log',
+        },
+        'telegram_bot_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'telegram_bot.log',
+        },
+        'error_file': {  # Новый обработчик для ошибок
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'error.log',
         },
     },
     'loggers': {
-        '': {  # Корневой логгер
-            'handlers': ['console', 'file'],
+        'telegramadmin_bot': {
+            'handlers': ['console', 'admin_bot_file', 'error_file'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        'telegram_bot': {
+            'handlers': ['console', 'telegram_bot_file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django': {  # Логгер для Django
+            'handlers': ['console', 'error_file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        '': {
+            'handlers': ['console', 'error_file'],
+            'level': 'INFO',
             'propagate': True,
         },
     },
