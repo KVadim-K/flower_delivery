@@ -11,13 +11,18 @@ env_path = BASE_DIR / 'telegram_bot' / '.env'
 # Загрузка переменных окружения
 load_dotenv(dotenv_path=env_path)
 
-# Доступ к переменным
+# Переменные для основного бота
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 API_URL = os.getenv('API_URL')
-ADMIN_TELEGRAM_IDS = os.getenv('ADMIN_TELEGRAM_IDS').split(',')
+SITE_URL = os.getenv('SITE_URL')
+TELEGRAM_IDS_RAW = os.getenv('TELEGRAM_IDS', '')
+TELEGRAM_IDS = [int(id.strip()) for id in TELEGRAM_IDS_RAW.split(',') if id.strip().isdigit()]
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+# Переменные для административного бота
+ADMIN_BOT_TOKEN = os.getenv('ADMIN_BOT_TOKEN')
+ADMIN_TELEGRAM_IDS_RAW = os.getenv('ADMIN_TELEGRAM_IDS', '')
+ADMIN_TELEGRAM_IDS = [int(id.strip()) for id in ADMIN_TELEGRAM_IDS_RAW.split(',') if id.strip().isdigit()]
+ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-%+wty+6+g8negp0b4lml(%$zw*z6=4#@zvjr=%oe#3g^iyrks1'
@@ -60,6 +65,7 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'reports.apps.ReportsConfig',
     'telegram_bot',  # Добавляем telegram_bot
+    'telegramadmin_bot',   # Новый админ-бот
 ]
 
 MIDDLEWARE = [
@@ -180,15 +186,6 @@ LOGOUT_REDIRECT_URL = '/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.example.com'  # Замените на SMTP-сервер вашего почтового провайдера
-# EMAIL_PORT = 587  # Порт для TLS
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'your_email@example.com'  # Замените на ваш email
-# EMAIL_HOST_PASSWORD = 'your_email_password'  # Замените на ваш пароль
-# DEFAULT_FROM_EMAIL = 'your_email@example.com'
-
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -196,16 +193,31 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
-        'file': {  # Добавлен файловый обработчик для логирования
+        'admin_bot_file': {  # Отдельный файловый обработчик для admin_bot
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'bot.log',
+            'filename': BASE_DIR / 'admin_bot.log',
+        },
+        'telegram_bot_file': {  # Файловый обработчик для существующего бота
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'telegram_bot.log',
         },
     },
     'loggers': {
-        '': {  # Корневой логгер
-            'handlers': ['console', 'file'],
+        'telegramadmin_bot': {  # Логгер для admin_bot
+            'handlers': ['console', 'admin_bot_file'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        'telegram_bot': {  # Логгер для существующего бота
+            'handlers': ['console', 'telegram_bot_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        '': {  # Корневой логгер
+            'handlers': ['console'],
+            'level': 'INFO',
             'propagate': True,
         },
     },

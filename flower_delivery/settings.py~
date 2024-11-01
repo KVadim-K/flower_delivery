@@ -11,13 +11,18 @@ env_path = BASE_DIR / 'telegram_bot' / '.env'
 # Загрузка переменных окружения
 load_dotenv(dotenv_path=env_path)
 
-# Доступ к переменным
+# Переменные для основного бота
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 API_URL = os.getenv('API_URL')
-ADMIN_TELEGRAM_IDS = os.getenv('ADMIN_TELEGRAM_IDS').split(',')
+SITE_URL = os.getenv('SITE_URL')
+TELEGRAM_IDS_RAW = os.getenv('TELEGRAM_IDS', '')
+TELEGRAM_IDS = [int(id.strip()) for id in TELEGRAM_IDS_RAW.split(',') if id.strip().isdigit()]
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+# Переменные для административного бота
+ADMIN_BOT_TOKEN = os.getenv('ADMIN_BOT_TOKEN')
+ADMIN_TELEGRAM_IDS_RAW = os.getenv('ADMIN_TELEGRAM_IDS', '')
+ADMIN_TELEGRAM_IDS = [int(id.strip()) for id in ADMIN_TELEGRAM_IDS_RAW.split(',') if id.strip().isdigit()]
+ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-%+wty+6+g8negp0b4lml(%$zw*z6=4#@zvjr=%oe#3g^iyrks1'
@@ -60,6 +65,7 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'reports.apps.ReportsConfig',
     'telegram_bot',  # Добавляем telegram_bot
+    'telegramadmin_bot',   # Новый админ-бот
 ]
 
 MIDDLEWARE = [
@@ -172,7 +178,6 @@ REST_FRAMEWORK = {
 SITE_ID = 1
 
 # Django Allauth Settings
-ACCOUNT_SIGNUP_FORM_CLASS = 'users.forms.CustomSignupForm'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # 'none', 'mandatory', 'optional'
