@@ -1,0 +1,16 @@
+# flowre_delivery/celery.py
+
+from __future__ import absolute_import, unicode_literals
+import os
+from celery import Celery
+
+# Задаем настройки Django по умолчанию для Celery
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'flower_delivery.settings')
+
+app = Celery('flower_delivery')
+
+# Загружаем конфигурацию Celery из settings.py
+app.config_from_object('django.conf:settings', namespace='CELERY')
+
+# Автоматически находим и регистрируем задачи
+app.autodiscover_tasks()

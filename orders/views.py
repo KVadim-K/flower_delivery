@@ -13,8 +13,7 @@ from rest_framework.response import Response
 from django.db.models import Sum
 from rest_framework.permissions import IsAuthenticated
 from .forms import OrderDeliveryForm
-from asgiref.sync import async_to_sync
-from telegramadmin_bot.handlers.orders import notify_admins_of_new_order
+from telegramadmin_bot.handlers.orders import send_notification_to_admins
 
 @login_required
 def create_order(request, product_id=None):
@@ -75,8 +74,8 @@ def create_order(request, product_id=None):
             # Очищаем корзину после создания заказа
             cart.items.all().delete()
 
-            # Уведомляем администраторов о новом заказе
-            async_to_sync(notify_admins_of_new_order)(order)
+            # Уведомляем администраторов о новом заказе через Celery
+            send_notification_to_admins.delay(order.id)
 
             return redirect('orders:order_history')
         else:

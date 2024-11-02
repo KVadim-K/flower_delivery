@@ -13,30 +13,29 @@ from rest_framework.response import Response
 from django.db.models import Sum
 from rest_framework.permissions import IsAuthenticated
 from .forms import OrderDeliveryForm
-from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync
 from telegramadmin_bot.handlers.orders import notify_admins_of_new_order
-from django.utils.decorators import method_decorator
 
-@method_decorator(login_required, name='dispatch')
-async def create_order(request, product_id=None):
+@login_required
+def create_order(request, product_id=None):
     """
     Создание заказа через веб-интерфейс с указанием данных для доставки.
     """
     # Получаем корзину текущего пользователя или создаём новую
-    cart, created = await sync_to_async(Cart.objects.get_or_create)(user=request.user)
+    cart, created = Cart.objects.get_or_create(user=request.user)
 
     # Если передан product_id, добавляем товар в корзину
     if product_id:
-        product = await sync_to_async(get_object_or_404)(Product, id=product_id)
-        cart_item, item_created = await sync_to_async(CartItem.objects.get_or_create)(cart=cart, product=product)
+        product = get_object_or_404(Product, id=product_id)
+        cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
         if item_created:
             cart_item.quantity = 1  # Устанавливаем количество, если товар новый в корзине
         else:
             cart_item.quantity += 1  # Увеличиваем количество, если товар уже добавлен
-        await sync_to_async(cart_item.save)()
+        cart_item.save()
 
     # Проверяем, не пуста ли корзина
-    if not await sync_to_async(cart.items.exists)():
+    if not cart.items.exists():
         return redirect('cart:cart_detail')
 
     # Обработка создания заказа при POST-запросе
@@ -50,7 +49,7 @@ async def create_order(request, product_id=None):
             phone_number = form.cleaned_data['phone_number']
 
             # Создаём заказ
-            order = await sync_to_async(Order.objects.create)(
+            order = Order.objects.create(
                 user=request.user,
                 status='pending',
                 created_at=timezone.now(),
@@ -61,23 +60,23 @@ async def create_order(request, product_id=None):
             )
 
             # Переносим товары из корзины в заказ
-            for item in await sync_to_async(list)(cart.items.all()):
-                await sync_to_async(OrderItem.objects.create)(
+            for item in cart.items.all():
+                OrderItem.objects.create(
                     order=order,
                     product=item.product,
                     quantity=item.quantity
                 )
 
             # Вычисляем общую сумму заказа
-            total_price = sum(item.product.price * item.quantity for item in await sync_to_async(list)(order.order_items.all()))
+            total_price = sum(item.product.price * item.quantity for item in order.order_items.all())
             order.total_price = total_price
-            await sync_to_async(order.save)()
+            order.save()
 
             # Очищаем корзину после создания заказа
-            await sync_to_async(cart.items.all().delete)()
+            cart.items.all().delete()
 
-            # Уведомляем администраторов о новом заказе
-            await notify_admins_of_new_order(order)
+            # Уведомляем администраторов о новом заказе, передаем только order.id
+            async_to_sync(notify_admins_of_new_order)(order.id)
 
             return redirect('orders:order_history')
         else:

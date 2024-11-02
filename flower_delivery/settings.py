@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django_celery_results',
 
     # Необходимо для django-allauth
     'django.contrib.sites',
@@ -188,6 +189,16 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Настройки для Celery
 CELERY_BROKER_URL = 'redis://localhost:6380/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6380/0'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Moscow'
+# Настройка для хранения результатов задач Celery в базе данных Django
+CELERY_RESULT_BACKEND = 'django-db'
+
+
 
 LOGGING = {
     'version': 1,

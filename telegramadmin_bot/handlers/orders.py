@@ -5,9 +5,11 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telegramadmin_bot.config import ADMIN_BOT_TOKEN, ADMIN_TELEGRAM_IDS
 from orders.models import Order
-from asgiref.sync import sync_to_async
+from celery import shared_task
 import logging
 import re
+from asgiref.sync import sync_to_async, async_to_sync
+import asyncio
 
 # Инициализация бота
 bot = Bot(token=ADMIN_BOT_TOKEN)
@@ -17,12 +19,23 @@ router = Router()
 async def is_admin(user_id):
     return user_id in ADMIN_TELEGRAM_IDS
 
-async def notify_admins_of_new_order(order):
-    # Получаем связанные товары асинхронно
-    order_items = await sync_to_async(list)(order.order_items.all())
+@shared_task
+def send_notification_to_admins(order_id):
+    """
+    Задача для асинхронной отправки уведомления администраторам через Celery.
+    """
+    async_to_sync(notify_admins_of_new_order)(order_id)
+
+async def notify_admins_of_new_order(order_id):
+    """
+    Отправка уведомления администраторам о новом заказе.
+    """
+    # Получаем объект заказа
+    order = await sync_to_async(Order.objects.get)(id=order_id)
+    order_items = await sync_to_async(list)(order.order_items.select_related('product').all())
+
     items_list = "\n".join([
-        f"- {await sync_to_async(lambda: item.product.name)()} x {item.quantity}"
-        for item in order_items
+        f"- {item.product.name} x {item.quantity}" for item in order_items
     ])
 
     # Формируем текст уведомления
@@ -49,6 +62,7 @@ async def notify_admins_of_new_order(order):
             await bot.send_message(admin_id, message_text, reply_markup=keyboard, parse_mode="Markdown")
         except Exception as e:
             logger.error(f"Ошибка при отправке уведомления администратору {admin_id}: {e}")
+    await bot.session.close()
 
 @router.message(Command(commands=['orders']))
 async def list_orders(message: types.Message):

@@ -5,40 +5,66 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telegramadmin_bot.config import ADMIN_BOT_TOKEN, ADMIN_TELEGRAM_IDS
 from orders.models import Order
-from asgiref.sync import sync_to_async
+from celery import shared_task
 import logging
 import re
+import asyncio
 
-# Инициализация бота
-bot = Bot(token=ADMIN_BOT_TOKEN)
+# Инициализация бота и логгера
 logger = logging.getLogger('telegramadmin_bot')
 router = Router()
 
 async def is_admin(user_id):
     return user_id in ADMIN_TELEGRAM_IDS
 
-async def notify_admins_of_new_order(order):
-    order_items = await sync_to_async(list)(order.order_items.all())
-    items_list = "\n".join([f"- {await sync_to_async(lambda: item.product.name)()} x {item.quantity}" for item in order_items])
-    message_text = (
-        f"🆕 Новый заказ!\n\n"
-        f"**ID:** {order.id}\n"
-        f"**Пользователь:** {order.user.username}\n"
-        f"**Сумма:** {order.total_price} ₽\n"
-        f"**Товары:**\n{items_list}\n\n"
-        f"**Статус:** {order.get_status_display()}"
-    )
+@shared_task
+def send_notification_to_admins(order_id):
+    """
+    Задача для асинхронной отправки уведомления администраторам через Celery.
+    """
+    asyncio.run(notify_admins_of_new_order(order_id))
 
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [
-            InlineKeyboardButton("Детали заказа", callback_data=f"detail_{order.id}"),
-            InlineKeyboardButton("Изменить статус", callback_data=f"change_{order.id}")
-        ]
-    ])
+async def notify_admins_of_new_order(order_id):
+    """
+    Отправка уведомления администраторам о новом заказе.
+    """
+    # Инициализация бота в асинхронной функции
+    bot = Bot(token=ADMIN_BOT_TOKEN)
+    try:
+        # Получаем объект заказа
+        order = await Order.objects.aget(id=order_id)
+        order_items = await asyncio.gather(*[item.async_get() for item in order.order_items.all()])
 
-    for admin_id in ADMIN_TELEGRAM_IDS:
-        await bot.send_message(admin_id, message_text, reply_markup=keyboard, parse_mode="Markdown")
+        items_list = "\n".join([
+            f"- {item.product.name} x {item.quantity}" for item in order_items
+        ])
 
+        # Формируем текст уведомления
+        message_text = (
+            f"🆕 Новый заказ!\n\n"
+            f"**ID:** {order.id}\n"
+            f"**Пользователь:** {order.user.username}\n"
+            f"**Сумма:** {order.total_price} ₽\n"
+            f"**Товары:**\n{items_list}\n\n"
+            f"**Статус:** {order.get_status_display()}"
+        )
+
+        # Создаем клавиатуру
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [
+                InlineKeyboardButton(text="Детали заказа", callback_data=f"detail_{order.id}"),
+                InlineKeyboardButton(text="Изменить статус", callback_data=f"change_{order.id}")
+            ]
+        ])
+
+        # Отправляем сообщение всем администраторам
+        for admin_id in ADMIN_TELEGRAM_IDS:
+            try:
+                await bot.send_message(admin_id, message_text, reply_markup=keyboard, parse_mode="Markdown")
+            except Exception as e:
+                logger.error(f"Ошибка при отправке уведомления администратору {admin_id}: {e}")
+    finally:
+        await bot.session.close()  # Закрываем сессию бота
 
 @router.message(Command(commands=['orders']))
 async def list_orders(message: types.Message):
@@ -46,19 +72,22 @@ async def list_orders(message: types.Message):
         await message.reply("У вас нет доступа к этому боту.")
         return
 
-    orders = await sync_to_async(list)(Order.objects.all().order_by('-created_at')[:10])
+    orders = await Order.objects.all().order_by('-created_at')[:10]
     if not orders:
         await message.reply("Нет доступных заказов.")
         return
 
     for order in orders:
-        username = await sync_to_async(lambda: order.user.username)()
-        status_display = await sync_to_async(order.get_status_display)()
-        created_at = await sync_to_async(order.created_at.strftime)('%Y-%m-%d %H:%M')
+        username = order.user.username
+        status_display = order.get_status_display()
+        created_at = order.created_at.strftime('%Y-%m-%d %H:%M')
 
-        detail_button = InlineKeyboardButton(text="Детали", callback_data=f"detail_{order.id}")
-        change_status_button = InlineKeyboardButton(text="Изменить статус", callback_data=f"change_{order.id}")
-        keyboard = InlineKeyboardMarkup(inline_keyboard=[[detail_button, change_status_button]])
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [
+                InlineKeyboardButton(text="Детали", callback_data=f"detail_{order.id}"),
+                InlineKeyboardButton(text="Изменить статус", callback_data=f"change_{order.id}")
+            ]
+        ])
 
         await message.reply(
             f"ID: {order.id} | Пользователь: {username} | Статус: {status_display} | Дата: {created_at}",
@@ -75,14 +104,14 @@ async def order_details(message: types.Message):
     try:
         _, order_id_str = message.text.split()
         order_id = int(order_id_str)
-        order = await sync_to_async(Order.objects.get)(id=order_id)
+        order = await Order.objects.aget(id=order_id)
     except (ValueError, Order.DoesNotExist):
         await message.reply("Неверный формат команды или заказ не найден. Используйте: /order <id>")
         return
 
-    username = await sync_to_async(lambda: order.user.username)()
-    status_display = await sync_to_async(order.get_status_display)()
-    created_at = await sync_to_async(order.created_at.strftime)('%Y-%m-%d %H:%M')
+    username = order.user.username
+    status_display = order.get_status_display()
+    created_at = order.created_at.strftime('%Y-%m-%d %H:%M')
 
     response = (
         f"**Детали заказа ID: {order.id}**\n"
@@ -95,10 +124,9 @@ async def order_details(message: types.Message):
         f"**Товары:**\n"
     )
 
-    order_items = await sync_to_async(list)(order.order_items.all())
+    order_items = await order.order_items.all().prefetch_related('product')
     for item in order_items:
-        product_name = await sync_to_async(lambda: item.product.name)()
-        response += f"- {product_name} x {item.quantity} = {item.product.price * item.quantity} ₽\n"
+        response += f"- {item.product.name} x {item.quantity} = {item.product.price * item.quantity} ₽\n"
 
     await message.reply(response, parse_mode='Markdown')
 
@@ -112,14 +140,14 @@ async def callback_handler(callback_query: types.CallbackQuery):
     if data.startswith("detail_"):
         try:
             order_id = int(data.split('_')[1])
-            order = await sync_to_async(Order.objects.get)(id=order_id)
+            order = await Order.objects.aget(id=order_id)
         except (ValueError, Order.DoesNotExist):
             await callback_query.answer("Заказ не найден.", show_alert=True)
             return
 
-        username = await sync_to_async(lambda: order.user.username)()
-        status_display = await sync_to_async(order.get_status_display)()
-        created_at = await sync_to_async(order.created_at.strftime)('%Y-%m-%d %H:%M')
+        username = order.user.username
+        status_display = order.get_status_display()
+        created_at = order.created_at.strftime('%Y-%m-%d %H:%M')
 
         response = (
             f"**Детали заказа ID: {order.id}**\n"
@@ -132,32 +160,29 @@ async def callback_handler(callback_query: types.CallbackQuery):
             f"**Товары:**\n"
         )
 
-        order_items = await sync_to_async(list)(order.order_items.all())
+        order_items = await order.order_items.all().prefetch_related('product')
         for item in order_items:
-            product_name = await sync_to_async(lambda: item.product.name)()
-            response += f"- {product_name} x {item.quantity} = {item.product.price * item.quantity} ₽\n"
+            response += f"- {item.product.name} x {item.quantity} = {item.product.price * item.quantity} ₽\n"
 
         await callback_query.message.reply(response, parse_mode='Markdown')
 
     elif data.startswith("change_"):
         try:
             order_id = int(data.split('_')[1])
-            order = await sync_to_async(Order.objects.get)(id=order_id)
+            order = await Order.objects.aget(id=order_id)
         except (ValueError, Order.DoesNotExist):
             await callback_query.answer("Заказ не найден.", show_alert=True)
             return
 
-        keyboard = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(
-                        text=status_name,
-                        callback_data=f"set_status_{order.id}_{status_code}"
-                    )
-                    for status_code, status_name in Order.STATUS_CHOICES if status_code != order.status
-                ]
+        keyboard = InlineKeyboardMarkup(inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=status_name,
+                    callback_data=f"set_status_{order.id}_{status_code}"
+                )
+                for status_code, status_name in Order.STATUS_CHOICES if status_code != order.status
             ]
-        )
+        ])
 
         await callback_query.message.reply(
             f"Выберите новый статус для заказа ID {order.id}:",
@@ -166,7 +191,6 @@ async def callback_handler(callback_query: types.CallbackQuery):
 
 @router.callback_query(lambda call: call.data and call.data.startswith('set_status_'))
 async def set_status(callback_query: types.CallbackQuery):
-    # Логирование полученных данных
     logger.info(f"Получено set_status callback_data: {repr(callback_query.data)}")
 
     if not await is_admin(callback_query.from_user.id):
@@ -174,8 +198,6 @@ async def set_status(callback_query: types.CallbackQuery):
         return
 
     clean_data = callback_query.data.strip()
-    logger.info(f"Обработанный callback_data после очистки: {repr(clean_data)}")
-
     match = re.match(r"^set_status_(\d+)_(\w+)$", clean_data)
 
     if not match:
@@ -184,7 +206,6 @@ async def set_status(callback_query: types.CallbackQuery):
         return
 
     order_id_str, new_status = match.groups()
-    logger.info(f"Извлеченные данные: order_id_str={order_id_str}, new_status={new_status}")
 
     if not order_id_str.isdigit():
         logger.error(f"Некорректный ID заказа: {order_id_str}")
@@ -194,7 +215,7 @@ async def set_status(callback_query: types.CallbackQuery):
     order_id = int(order_id_str)
 
     try:
-        order = await sync_to_async(Order.objects.get)(id=order_id)
+        order = await Order.objects.aget(id=order_id)
     except Order.DoesNotExist:
         logger.error(f"Заказ с ID {order_id} не найден")
         await callback_query.answer("Заказ не найден.", show_alert=True)
@@ -205,11 +226,11 @@ async def set_status(callback_query: types.CallbackQuery):
         await callback_query.answer("Неверный статус.", show_alert=True)
         return
 
-    old_status_display = await sync_to_async(lambda: dict(Order.STATUS_CHOICES)[order.status])()
-    new_status_display = await sync_to_async(lambda: dict(Order.STATUS_CHOICES)[new_status])()
+    old_status_display = dict(Order.STATUS_CHOICES)[order.status]
+    new_status_display = dict(Order.STATUS_CHOICES)[new_status]
 
     order.status = new_status
-    await sync_to_async(order.save)()
+    await order.asave()
 
     logger.info(f"Статус заказа ID {order.id} изменен с {old_status_display} на {new_status_display}")
 
