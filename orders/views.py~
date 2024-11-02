@@ -11,80 +11,87 @@ from .serializers import OrderSerializer, OrderStatusSerializer, OrderAnalyticsS
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from .forms import OrderDeliveryForm
+from asgiref.sync import sync_to_async
+from telegramadmin_bot.handlers.orders import notify_admins_of_new_order
+from django.utils.decorators import method_decorator
 
-# Ваши существующие представления
-
-@login_required
-def create_order(request, product_id=None):
+@method_decorator(login_required, name='dispatch')
+async def create_order(request, product_id=None):
     """
     Создание заказа через веб-интерфейс с указанием данных для доставки.
     """
     # Получаем корзину текущего пользователя или создаём новую
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart, created = await sync_to_async(Cart.objects.get_or_create)(user=request.user)
 
     # Если передан product_id, добавляем товар в корзину
     if product_id:
-        product = get_object_or_404(Product, id=product_id)
-        cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
+        product = await sync_to_async(get_object_or_404)(Product, id=product_id)
+        cart_item, item_created = await sync_to_async(CartItem.objects.get_or_create)(cart=cart, product=product)
         if item_created:
             cart_item.quantity = 1  # Устанавливаем количество, если товар новый в корзине
         else:
             cart_item.quantity += 1  # Увеличиваем количество, если товар уже добавлен
-        cart_item.save()
+        await sync_to_async(cart_item.save)()
 
     # Проверяем, не пуста ли корзина
-    if not cart.items.exists():
+    if not await sync_to_async(cart.items.exists)():
         return redirect('cart:cart_detail')
 
     # Обработка создания заказа при POST-запросе
     if request.method == 'POST':
-        # Получаем данные доставки из формы
-        address = request.POST.get('address')
-        city = request.POST.get('city')
-        postal_code = request.POST.get('postal_code')
-        phone_number = request.POST.get('phone_number')
+        form = OrderDeliveryForm(request.POST)
+        if form.is_valid():
+            # Получаем данные доставки из формы
+            address = form.cleaned_data['address']
+            city = form.cleaned_data['city']
+            postal_code = form.cleaned_data['postal_code']
+            phone_number = form.cleaned_data['phone_number']
 
-        # Валидация данных доставки (можно добавить более сложную валидацию)
-        if not all([address, city, postal_code, phone_number]):
-            context = {
-                'cart': cart,
-                'error': 'Пожалуйста, заполните все поля для доставки.'
-            }
-            return render(request, 'orders/create_order.html', context)
-
-        # Создаём заказ
-        order = Order.objects.create(
-            user=request.user,
-            status='pending',
-            created_at=timezone.now(),
-            address=address,
-            city=city,
-            postal_code=postal_code,
-            phone_number=phone_number
-        )
-
-        # Переносим товары из корзины в заказ
-        for item in cart.items.all():
-            OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                quantity=item.quantity
+            # Создаём заказ
+            order = await sync_to_async(Order.objects.create)(
+                user=request.user,
+                status='pending',
+                created_at=timezone.now(),
+                address=address,
+                city=city,
+                postal_code=postal_code,
+                phone_number=phone_number
             )
 
-        # Вычисляем общую сумму заказа
-        total_price = sum(item.product.price * item.quantity for item in order.order_items.all())
-        order.total_price = total_price
-        order.save()
+            # Переносим товары из корзины в заказ
+            for item in await sync_to_async(list)(cart.items.all()):
+                await sync_to_async(OrderItem.objects.create)(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity
+                )
 
-        # Очищаем корзину после создания заказа
-        cart.items.all().delete()
+            # Вычисляем общую сумму заказа
+            total_price = sum(item.product.price * item.quantity for item in await sync_to_async(list)(order.order_items.all()))
+            order.total_price = total_price
+            await sync_to_async(order.save)()
 
-        return redirect('orders:order_history')
+            # Очищаем корзину после создания заказа
+            await sync_to_async(cart.items.all().delete)()
 
-    # Рендерим шаблон создания заказа с текущей корзиной
-    return render(request, 'orders/create_order.html', {'cart': cart})
+            # Уведомляем администраторов о новом заказе
+            await notify_admins_of_new_order(order)
+
+            return redirect('orders:order_history')
+        else:
+            # Если форма не валидна, отобразить ошибки
+            context = {
+                'cart': cart,
+                'form': form
+            }
+            return render(request, 'orders/create_order.html', context)
+    else:
+        form = OrderDeliveryForm()
+
+    # Рендерим шаблон создания заказа с текущей корзиной и формой
+    return render(request, 'orders/create_order.html', {'cart': cart, 'form': form})
 
 
 @login_required

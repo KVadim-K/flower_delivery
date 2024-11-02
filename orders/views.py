@@ -11,11 +11,10 @@ from .serializers import OrderSerializer, OrderStatusSerializer, OrderAnalyticsS
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .forms import OrderDeliveryForm  # Импортируем форму
-
-# Ваши существующие представления
+from .forms import OrderDeliveryForm
+from asgiref.sync import async_to_sync
+from telegramadmin_bot.handlers.orders import notify_admins_of_new_order
 
 @login_required
 def create_order(request, product_id=None):
@@ -75,6 +74,9 @@ def create_order(request, product_id=None):
 
             # Очищаем корзину после создания заказа
             cart.items.all().delete()
+
+            # Уведомляем администраторов о новом заказе
+            async_to_sync(notify_admins_of_new_order)(order)
 
             return redirect('orders:order_history')
         else:
