@@ -186,6 +186,9 @@ LOGOUT_REDIRECT_URL = '/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Настройки для Celery
+CELERY_BROKER_URL = 'redis://localhost:6380/0'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

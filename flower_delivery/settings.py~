@@ -197,16 +197,19 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'admin_bot.log',
+            'encoding': 'utf-8',  # Добавлено для корректного отображения UTF-8
         },
         'telegram_bot_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'telegram_bot.log',
+            'encoding': 'utf-8',  # Добавлено для корректного отображения UTF-8
         },
-        'error_file': {  # Новый обработчик для ошибок
+        'error_file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'error.log',
+            'encoding': 'utf-8',  # Добавлено для корректного отображения UTF-8
         },
     },
     'loggers': {
@@ -220,7 +223,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
-        'django': {  # Логгер для Django
+        'django': {
             'handlers': ['console', 'error_file'],
             'level': 'ERROR',
             'propagate': True,
@@ -232,6 +235,7 @@ LOGGING = {
         },
     },
 }
+
 
 # Загрузка переменных окружения
 print(f"API_URL from settings: {API_URL}")
