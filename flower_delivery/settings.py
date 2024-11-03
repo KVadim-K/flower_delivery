@@ -251,6 +251,6 @@ LOGGING = {
 }
 
 
-# Загрузка переменных окружения
-print(f"API_URL from settings: {API_URL}")
-print(f"ADMIN_TELEGRAM_IDS from settings: {ADMIN_TELEGRAM_IDS}")
+# # Загрузка переменных окружения
+# print(f"API_URL from settings: {API_URL}")
+# print(f"ADMIN_TELEGRAM_IDS from settings: {ADMIN_TELEGRAM_IDS}")

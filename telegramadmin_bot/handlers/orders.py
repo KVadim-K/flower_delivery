@@ -5,10 +5,9 @@ from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telegramadmin_bot.config import ADMIN_BOT_TOKEN, ADMIN_TELEGRAM_IDS
 from orders.models import Order
-from celery import shared_task
 import logging
 import re
-from asgiref.sync import async_to_sync, sync_to_async
+from asgiref.sync import sync_to_async
 
 # Инициализация бота
 bot = Bot(token=ADMIN_BOT_TOKEN)
@@ -18,67 +17,6 @@ router = Router()
 
 async def is_admin(user_id):
     return user_id in ADMIN_TELEGRAM_IDS
-
-
-@shared_task
-def send_notification_to_admins(order_id):
-    """
-    Синхронная задача для отправки уведомления администраторам через Celery.
-    """
-    try:
-        # Получаем объект заказа с предзагруженным пользователем и товарами
-        order = Order.objects.select_related("user").prefetch_related("order_items__product").get(id=order_id)
-        # Получаем список элементов заказа с предзагруженными продуктами
-        order_items = list(order.order_items.all())
-    except Order.DoesNotExist:
-        logger.error(f"Заказ с ID {order_id} не найден.")
-        return
-    except Exception as e:
-        logger.error(f"Ошибка при получении заказа с ID {order_id}: {e}")
-        return
-
-    try:
-        username = order.user.username
-        status_display = order.get_status_display()
-        items_list = "\n".join([
-            f"🌸 {item.product.name} x {item.quantity}" for item in order_items
-        ])
-    except Exception as e:
-        logger.error(f"Ошибка при обработке данных заказа ID {order_id}: {e}")
-        return
-
-    # Формируем текст уведомления
-    message_text = (
-        f"🆕 **Новый заказ!**\n\n"
-        f"🔢 **ID:** {order.id}\n"
-        f"👤 **Пользователь:** {username}\n"
-        f"💰 **Сумма:** {order.total_price} ₽\n"
-        f"🛍️ **Товары:**\n{items_list}\n\n"
-        f"📦 **Статус:** {status_display}"
-    )
-
-    # Создаем клавиатуру
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [
-            InlineKeyboardButton(text="📄 Детали заказа", callback_data=f"detail_{order.id}"),
-            InlineKeyboardButton(text="🔄 Изменить статус", callback_data=f"change_{order.id}")
-        ]
-    ])
-
-    # Отправляем сообщение всем администраторам
-    for admin_id in ADMIN_TELEGRAM_IDS:
-        try:
-            async_to_sync(bot.send_message)(
-                admin_id,
-                message_text,
-                reply_markup=keyboard,
-                parse_mode="Markdown"
-            )
-        except Exception as e:
-            logger.error(f"Ошибка при отправке уведомления администратору {admin_id}: {e}")
-
-    # Не закрывайте сессию бота здесь, если бот используется глобально
-    # async_to_sync(bot.session.close)()
 
 
 @router.message(Command(commands=['orders']))

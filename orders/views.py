@@ -13,7 +13,8 @@ from rest_framework.response import Response
 from django.db.models import Sum
 from rest_framework.permissions import IsAuthenticated
 from .forms import OrderDeliveryForm
-from telegramadmin_bot.handlers.orders import send_notification_to_admins
+# Избегаем дублирования сигнала через send_notification_to_admins.delay(order.id)
+# from telegramadmin_bot.tasks import send_notification_to_admins
 
 @login_required
 def create_order(request, product_id=None):
@@ -75,7 +76,7 @@ def create_order(request, product_id=None):
             cart.items.all().delete()
 
             # Уведомляем администраторов о новом заказе через Celery
-            send_notification_to_admins.delay(order.id)
+            # send_notification_to_admins.delay(order.id)
 
             return redirect('orders:order_history')
         else:

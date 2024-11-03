@@ -77,7 +77,7 @@ def send_notification_to_admins(order_id):
         except Exception as e:
             logger.error(f"Ошибка при отправке уведомления администратору {admin_id}: {e}")
 
-    # Не закрывайте сессию бота здесь, если бот используется глобально
+    # Не закрываем сессию бота здесь, если бот используется глобально
     # async_to_sync(bot.session.close)()
 
 
@@ -164,7 +164,7 @@ async def order_details(message: types.Message):
     )
 
     try:
-        order_items = await sync_to_async(list)(order.order_items.all())
+        order_items = list(order.order_items.all())
     except Exception as e:
         logger.error(f"Ошибка при получении товаров заказа ID {order.id}: {e}")
         await message.reply("⚠️ Произошла ошибка при получении товаров заказа.")
@@ -180,6 +180,52 @@ async def order_details(message: types.Message):
             response += f"❓ - Товар ID {item.id} x {item.quantity} = Неизвестно ₽\n"
 
     await message.reply(response, parse_mode='Markdown')
+
+
+@router.message(Command(commands=['changestatus']))
+async def change_status_command(message: types.Message):
+    if not await is_admin(message.from_user.id):
+        await message.reply("🚫 У вас нет доступа к этому боту.")
+        return
+
+    parts = message.text.split()
+    if len(parts) != 2:
+        await message.reply("❗ Неверный формат команды. Используйте: /changestatus <id>")
+        return
+
+    order_id_str = parts[1]
+    if not order_id_str.isdigit():
+        await message.reply("❗ Некорректный ID заказа. Используйте числовой идентификатор.")
+        return
+
+    order_id = int(order_id_str)
+    try:
+        # Предварительно загружаем связанные объекты user и order_items__product
+        order = await sync_to_async(Order.objects.select_related("user").prefetch_related("order_items__product").get)(id=order_id)
+    except Order.DoesNotExist:
+        await message.reply("❗ Заказ не найден.")
+        return
+    except Exception as e:
+        logger.error(f"Ошибка при получении заказа ID {order_id}: {e}")
+        await message.reply("⚠️ Произошла ошибка при получении заказа.")
+        return
+
+    # Создаем ту же клавиатуру, что и при нажатии на кнопку "🔄 Изменить статус"
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text=f"🔄 {status_name}",
+                callback_data=f"set_status_{order.id}_{status_code}"
+            )
+            for status_code, status_name in Order.STATUS_CHOICES if status_code != order.status
+        ]
+    ])
+
+    await message.reply(
+        f"🔄 **Выбор нового статуса для заказа ID: {order.id}**",
+        reply_markup=keyboard,
+        parse_mode='Markdown'
+    )
 
 
 @router.callback_query(lambda call: call.data and (call.data.startswith('detail_') or call.data.startswith('change_')))
@@ -223,7 +269,7 @@ async def callback_handler(callback_query: types.CallbackQuery):
         )
 
         try:
-            order_items = await sync_to_async(list)(order.order_items.all())
+            order_items = list(order.order_items.all())
         except Exception as e:
             logger.error(f"Ошибка при получении товаров заказа ID {order.id}: {e}")
             await callback_query.message.reply("⚠️ Произошла ошибка при получении товаров заказа.", parse_mode='Markdown')
@@ -264,7 +310,7 @@ async def callback_handler(callback_query: types.CallbackQuery):
         ])
 
         await callback_query.message.reply(
-            f"🔄 Выберите новый статус для заказа ID {order.id}:",
+            f"🔄 **Выберите новый статус для заказа ID {order.id}:**",
             reply_markup=keyboard
         )
 
@@ -329,7 +375,7 @@ async def set_status(callback_query: types.CallbackQuery):
     logger.info(f"Статус заказа ID {order.id} изменен с {old_status_display} на {new_status_display}")
 
     await callback_query.message.reply(
-        f"✅ Статус заказа ID {order.id} изменен с {old_status_display} на {new_status_display}.",
+        f"✅ **Статус заказа ID {order.id} изменен с {old_status_display} на {new_status_display}.**",
         parse_mode='Markdown'
     )
     await callback_query.answer("✅ Статус изменен")
