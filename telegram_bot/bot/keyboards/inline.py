@@ -6,8 +6,8 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 confirm_order_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text="Подтвердить", callback_data="confirm_order"),
-            InlineKeyboardButton(text="Отменить", callback_data="cancel_order")
+            InlineKeyboardButton(text="✅ Подтвердить", callback_data="confirm_order"),
+            InlineKeyboardButton(text="❌ Отменить", callback_data="cancel_order")
         ]
     ],
     row_width=2
@@ -17,7 +17,7 @@ confirm_order_kb = InlineKeyboardMarkup(
 order_details_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text="Назад", callback_data="back_to_orders")
+            InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_orders")
         ]
     ],
     row_width=1
@@ -27,11 +27,11 @@ order_details_kb = InlineKeyboardMarkup(
 navigation_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text="Создать заказ", callback_data="create_order"),
-            InlineKeyboardButton(text="Посмотреть заказы", callback_data="view_orders")
+            InlineKeyboardButton(text="🛍️ Создать заказ", callback_data="create_order"),
+            InlineKeyboardButton(text="📦 Мои заказы", callback_data="view_orders")
         ],
         [
-            InlineKeyboardButton(text="Помощь", callback_data="help")
+            InlineKeyboardButton(text="ℹ️ Помощь", callback_data="help")
         ]
     ],
     row_width=2
@@ -41,8 +41,8 @@ navigation_kb = InlineKeyboardMarkup(
 confirm_link_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text="Связать", callback_data="confirm_link"),
-            InlineKeyboardButton(text="Отмена", callback_data="cancel_link")
+            InlineKeyboardButton(text="✅ Связать", callback_data="confirm_link"),
+            InlineKeyboardButton(text="❌ Отмена", callback_data="cancel_link")
         ]
     ],
     row_width=2

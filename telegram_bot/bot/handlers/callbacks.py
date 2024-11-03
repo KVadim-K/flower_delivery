@@ -47,9 +47,9 @@ async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
         logger.info(f"Связывание аккаунта для username '{username}' прошло успешно.")
         safe_username = html.escape(username)
         welcome_message = (
-            f"Ваш Telegram аккаунт успешно связан с учётной записью '{safe_username}'.\n"
-            f"Привет, {callback.from_user.full_name}! Я бот FlowerDelivery.\n"
-            "Используй кнопки ниже для взаимодействия."
+            f"✅ Ваш Telegram аккаунт успешно связан с учётной записью '{safe_username}'.\n"
+            f"👋 Привет, {callback.from_user.full_name}! Я бот FlowerDelivery.\n"
+            "Используйте кнопки ниже для взаимодействия."
         )
         await callback.message.edit_text(
             welcome_message,
@@ -63,17 +63,18 @@ async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
         if 'User not found' in error_message:
             # Предлагаем зарегистрироваться, если пользователь не найден
             registration_link = f"{SITE_URL}/register/"
-            await callback.message.answer(
-                f"Пользователь с именем '{username}' не найден на сайте.\n"
-                f"Пожалуйста, зарегистрируйтесь на сайте: [Регистрация]({registration_link})\n"
+            await callback.message.edit_text(
+                f"❌ Пользователь с именем '{username}' не найден на сайте.\n"
+                f"Пожалуйста, зарегистрируйтесь на сайте: <a href='{registration_link}'>Регистрация</a>\n"
                 "После регистрации используйте команду /link для связывания аккаунтов.",
-                parse_mode="Markdown",
+                reply_markup=navigation_kb,
+                parse_mode="HTML",
                 disable_web_page_preview=True
             )
         else:
             # Отправляем общее сообщение об ошибке
-            await callback.message.answer(
-                "Произошла ошибка при связывании. Пожалуйста, попробуйте позже.",
+            await callback.message.edit_text(
+                "⚠️ Произошла ошибка при связывании. Пожалуйста, попробуйте позже.",
                 reply_markup=navigation_kb,
                 parse_mode="HTML"
             )
@@ -91,7 +92,7 @@ async def cancel_link_callback(callback: CallbackQuery, state: FSMContext):
     """
     logger.info(f"Пользователь {callback.from_user.id} отменил связывание аккаунта.")
     await callback.message.edit_text(
-        "Связывание аккаунта отменено.",
+        "❌ Связывание аккаунта отменено.",
         reply_markup=navigation_kb,
         parse_mode="HTML"
     )
@@ -113,7 +114,7 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
     if not order_id:
         logger.error(f"Не удалось получить order_id для пользователя {telegram_id}.")
         await callback.message.edit_text(
-            "Произошла ошибка при подтверждении заказа. Пожалуйста, попробуйте позже.",
+            "⚠️ Произошла ошибка при подтверждении заказа. Пожалуйста, попробуйте позже.",
             reply_markup=navigation_kb,
             parse_mode="HTML"
         )
@@ -124,7 +125,7 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
     # Например, отправить запрос на подтверждение заказа или обновление статуса
 
     await callback.message.edit_text(
-        f"Ваш заказ №{order_id} подтверждён.",
+        f"✅ Ваш заказ №{order_id} подтверждён.",
         reply_markup=navigation_kb,
         parse_mode="HTML"
     )
@@ -145,7 +146,7 @@ async def cancel_order_callback(callback: CallbackQuery, state: FSMContext):
     logger.info(f"Пользователь {telegram_id} отменил заказ №{order_id}.")
 
     await callback.message.edit_text(
-        "Создание заказа отменено.",
+        "❌ Создание заказа отменено.",
         reply_markup=navigation_kb,
         parse_mode="HTML"
     )
@@ -167,7 +168,7 @@ async def create_order_callback(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "view_orders")
 async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
     """
-    Обработчик нажатия кнопки "Посмотреть заказы"
+    Обработчик нажатия кнопки "Мои заказы"
     """
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} запросил свои заказы.")
@@ -178,11 +179,11 @@ async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
         logger.warning(f"Пользователь {telegram_id} не связан с учётной записью.")
         registration_link = f"{SITE_URL}/register/"
         await callback.message.edit_text(
-            f"Ваш Telegram аккаунт не связан с учётной записью на сайте. "
-            f"Пожалуйста, зарегистрируйтесь на сайте: [Регистрация]({registration_link})\n"
+            f"🚫 Ваш Telegram аккаунт не связан с учётной записью на сайте.\n"
+            f"Пожалуйста, зарегистрируйтесь на сайте: <a href='{registration_link}'>Регистрация</a>\n"
             "Используйте /link для связывания аккаунтов.",
             reply_markup=navigation_kb,
-            parse_mode="Markdown",
+            parse_mode="HTML",
             disable_web_page_preview=True
         )
         await callback.answer()
@@ -195,15 +196,15 @@ async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
         if not orders:
             logger.info(f"Пользователь {telegram_id} не имеет заказов.")
             await callback.message.edit_text(
-                "У вас пока нет заказов.",
+                "📭 У вас пока нет заказов.",
                 reply_markup=navigation_kb,
                 parse_mode="HTML"
             )
         else:
-            orders_text = "Ваши заказы:\n"
+            orders_text = "📦 <b>Ваши заказы:</b>\n\n"
             for order in orders:
                 status_display = order.get('status_display', 'Неизвестен')
-                orders_text += f"Заказ №{order['id']} - Статус: {status_display}\n"
+                orders_text += f"🔹 <b>Заказ №{order['id']}</b> - Статус: {status_display}\n"
             logger.info(f"Заказы для пользователя {telegram_id}: {orders}")
             await callback.message.edit_text(
                 orders_text,
@@ -213,7 +214,7 @@ async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
     except Exception as e:
         logger.error(f"Ошибка при получении заказов для пользователя {telegram_id}: {e}")
         await callback.message.edit_text(
-            "Произошла ошибка при получении заказов. Пожалуйста, попробуйте позже.",
+            "⚠️ Произошла ошибка при получении заказов. Пожалуйста, попробуйте позже.",
             reply_markup=navigation_kb,
             parse_mode="HTML"
         )
@@ -230,12 +231,14 @@ async def help_callback(callback: CallbackQuery, state: FSMContext):
     Обработчик нажатия кнопки "Помощь"
     """
     help_text = (
+        "❓ <b>Помощь</b>\n\n"
         "Доступные команды:\n"
         "/start - Начать работу с ботом\n"
         "/help - Показать это сообщение\n"
-        "/link <username> - Связать Telegram аккаунт с учётной записью на сайте\n"
+        "/link username - Связать Telegram аккаунт с учётной записью на сайте\n"
         "/order - Создать новый заказ\n"
-        "/status <order_id> - Узнать статус заказа"
+        "/status order_id - Узнать статус заказа\n\n"
+        "Если у вас есть вопросы, обратитесь к нашему оператору."
     )
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} запросил помощь.")
@@ -255,18 +258,18 @@ async def back_to_orders_callback(callback: CallbackQuery):
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} вернулся к списку заказов.")
     await callback.message.edit_text(
-        "Ваши заказы:",
+        "📦 <b>Ваши заказы:</b>",
         reply_markup=navigation_kb,
         parse_mode="HTML"
     )
     await callback.answer()
 
 
-@router.callback_query(F.data == "unknown")
+@router.callback_query()
 async def unknown_callback(callback: CallbackQuery):
     """
     Обработчик неизвестных callback данных
     """
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} нажал неизвестную кнопку: {callback.data}")
-    await callback.answer("Неизвестная команда. Используйте /help для списка доступных команд.")
+    await callback.answer("❓ Неизвестная команда. Используйте /help для списка доступных команд.", show_alert=True)

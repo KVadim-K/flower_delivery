@@ -1,25 +1,31 @@
 # telegram_bot/bot/handlers/callbacks.py
 
 from aiogram import Router, F
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton  # Добавлены InlineKeyboardMarkup и InlineKeyboardButton
+from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
-from telegram_bot.bot.keyboards.inline import navigation_kb, confirm_order_kb
-from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
-from telegram_bot.bot.handlers.orders import initiate_order_creation  # Импортируем функцию
 
+from telegram_bot.bot.handlers.orders import initiate_order_creation
+from telegram_bot.bot.utils.api_client import APIClient, get_user_api_token
+from telegram_bot.bot.keyboards.inline import navigation_kb
 import logging
-import os  # Для доступа к переменным окружения
-import html  # Для экранирования
+import os
+import html
 
 logger = logging.getLogger(__name__)
 
 router = Router()
 
-# Получаем ADMIN_API_TOKEN из переменных окружения
+# Получаем ADMIN_API_TOKEN и SITE_URL из переменных окружения
 ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')
+SITE_URL = os.getenv('SITE_URL')  # Добавляем SITE_URL для формирования ссылки на регистрацию
 
 if not ADMIN_API_TOKEN:
     logger.error("ADMIN_API_TOKEN не установлен в переменных окружения.")
+    raise EnvironmentError("ADMIN_API_TOKEN не установлен в переменных окружения.")
+
+if not SITE_URL:
+    logger.error("SITE_URL не установлен в переменных окружения.")
+    raise EnvironmentError("SITE_URL не установлен в переменных окружения.")
 
 
 @router.callback_query(F.data == "confirm_link")
@@ -33,21 +39,11 @@ async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
 
     logger.info(f"Пользователь {telegram_id} подтверждает связывание с username '{username}'.")
 
-    # Проверка наличия ADMIN_API_TOKEN
-    if not ADMIN_API_TOKEN:
-        logger.error("ADMIN_API_TOKEN не установлен в переменных окружения.")
-        await callback.message.answer(
-            "Связывание временно недоступно. Попробуйте позже.",
-            reply_markup=navigation_kb,
-            parse_mode="HTML"  # Добавили parse_mode
-        )
-        await callback.answer()
-        return
-
     api_client = APIClient(token=ADMIN_API_TOKEN)
 
     try:
-        await api_client.link_telegram_id(username, telegram_id)
+        # Попытка связать Telegram ID с username через API
+        link_response = await api_client.link_telegram_id(username, telegram_id)
         logger.info(f"Связывание аккаунта для username '{username}' прошло успешно.")
         safe_username = html.escape(username)
         welcome_message = (
@@ -57,16 +53,30 @@ async def confirm_link_callback(callback: CallbackQuery, state: FSMContext):
         )
         await callback.message.edit_text(
             welcome_message,
-            reply_markup=navigation_kb,  # Используем корректно импортированную клавиатуру
-            parse_mode="HTML"  # Добавили parse_mode
+            reply_markup=navigation_kb,
+            parse_mode="HTML"
         )
     except Exception as e:
+        error_message = str(e)
         logger.error(f"Ошибка при связывании аккаунта: {e}")
-        await callback.message.answer(
-            "Произошла ошибка при связывании. Пожалуйста, попробуйте позже.",
-            reply_markup=navigation_kb,
-            parse_mode="HTML"  # Добавили parse_mode
-        )
+
+        if 'User not found' in error_message:
+            # Предлагаем зарегистрироваться, если пользователь не найден
+            registration_link = f"{SITE_URL}/register/"
+            await callback.message.answer(
+                f"Пользователь с именем '{username}' не найден на сайте.\n"
+                f"Пожалуйста, зарегистрируйтесь на сайте: [Регистрация]({registration_link})\n"
+                "После регистрации используйте команду /link для связывания аккаунтов.",
+                parse_mode="Markdown",
+                disable_web_page_preview=True
+            )
+        else:
+            # Отправляем общее сообщение об ошибке
+            await callback.message.answer(
+                "Произошла ошибка при связывании. Пожалуйста, попробуйте позже.",
+                reply_markup=navigation_kb,
+                parse_mode="HTML"
+            )
     finally:
         await api_client.close()
 
@@ -82,8 +92,8 @@ async def cancel_link_callback(callback: CallbackQuery, state: FSMContext):
     logger.info(f"Пользователь {callback.from_user.id} отменил связывание аккаунта.")
     await callback.message.edit_text(
         "Связывание аккаунта отменено.",
-        reply_markup=navigation_kb,  # Используем корректно импортированную клавиатуру
-        parse_mode="HTML"  # Добавили parse_mode
+        reply_markup=navigation_kb,
+        parse_mode="HTML"
     )
     await state.clear()
     await callback.answer()
@@ -105,7 +115,7 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
         await callback.message.edit_text(
             "Произошла ошибка при подтверждении заказа. Пожалуйста, попробуйте позже.",
             reply_markup=navigation_kb,
-            parse_mode="HTML"  # Добавили parse_mode
+            parse_mode="HTML"
         )
         await callback.answer()
         return
@@ -115,10 +125,10 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         f"Ваш заказ №{order_id} подтверждён.",
-        reply_markup=navigation_kb,  # Используем корректно импортированную клавиатуру
-        parse_mode="HTML"  # Добавили parse_mode
+        reply_markup=navigation_kb,
+        parse_mode="HTML"
     )
-    await state.clear()  # Очищаем состояние после подтверждения
+    await state.clear()
     logger.info(f"Состояние пользователя {telegram_id} очищено после подтверждения заказа")
     await callback.answer()
 
@@ -136,8 +146,8 @@ async def cancel_order_callback(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         "Создание заказа отменено.",
-        reply_markup=navigation_kb,  # Используем корректно импортированную клавиатуру
-        parse_mode="HTML"  # Добавили parse_mode
+        reply_markup=navigation_kb,
+        parse_mode="HTML"
     )
     await state.clear()
     await callback.answer()
@@ -166,10 +176,14 @@ async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
     user_api_token = await get_user_api_token(telegram_id)
     if not user_api_token:
         logger.warning(f"Пользователь {telegram_id} не связан с учётной записью.")
+        registration_link = f"{SITE_URL}/register/"
         await callback.message.edit_text(
-            "Ваш Telegram аккаунт не связан с учётной записью на сайте. Используйте /link для связывания.",
+            f"Ваш Telegram аккаунт не связан с учётной записью на сайте. "
+            f"Пожалуйста, зарегистрируйтесь на сайте: [Регистрация]({registration_link})\n"
+            "Используйте /link для связывания аккаунтов.",
             reply_markup=navigation_kb,
-            parse_mode="HTML"  # Добавили parse_mode
+            parse_mode="Markdown",
+            disable_web_page_preview=True
         )
         await callback.answer()
         return
@@ -183,7 +197,7 @@ async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
             await callback.message.edit_text(
                 "У вас пока нет заказов.",
                 reply_markup=navigation_kb,
-                parse_mode="HTML"  # Добавили parse_mode
+                parse_mode="HTML"
             )
         else:
             orders_text = "Ваши заказы:\n"
@@ -194,18 +208,18 @@ async def view_orders_callback(callback: CallbackQuery, state: FSMContext):
             await callback.message.edit_text(
                 orders_text,
                 reply_markup=navigation_kb,
-                parse_mode="HTML"  # Добавили parse_mode
+                parse_mode="HTML"
             )
     except Exception as e:
         logger.error(f"Ошибка при получении заказов для пользователя {telegram_id}: {e}")
-        # Не отправляем сырые исключения пользователю
         await callback.message.edit_text(
             "Произошла ошибка при получении заказов. Пожалуйста, попробуйте позже.",
             reply_markup=navigation_kb,
-            parse_mode="HTML"  # Добавили parse_mode
+            parse_mode="HTML"
         )
     finally:
         await api_client.close()
+        logger.debug(f"APIClient для пользователя {telegram_id} закрыт")
 
     await callback.answer()
 
@@ -219,16 +233,16 @@ async def help_callback(callback: CallbackQuery, state: FSMContext):
         "Доступные команды:\n"
         "/start - Начать работу с ботом\n"
         "/help - Показать это сообщение\n"
-        "/link <code>&lt;username&gt;</code> - Связать Telegram аккаунт с учётной записью на сайте\n"
+        "/link <username> - Связать Telegram аккаунт с учётной записью на сайте\n"
         "/order - Создать новый заказ\n"
-        "/status <code>&lt;order_id&gt;</code> - Узнать статус заказа"
+        "/status <order_id> - Узнать статус заказа"
     )
     telegram_id = callback.from_user.id
     logger.info(f"Пользователь {telegram_id} запросил помощь.")
     await callback.message.edit_text(
         help_text,
         reply_markup=navigation_kb,
-        parse_mode="HTML"  # Добавили parse_mode
+        parse_mode="HTML"
     )
     await callback.answer()
 
@@ -243,6 +257,16 @@ async def back_to_orders_callback(callback: CallbackQuery):
     await callback.message.edit_text(
         "Ваши заказы:",
         reply_markup=navigation_kb,
-        parse_mode="HTML"  # Добавили parse_mode
+        parse_mode="HTML"
     )
     await callback.answer()
+
+
+@router.callback_query(F.data == "unknown")
+async def unknown_callback(callback: CallbackQuery):
+    """
+    Обработчик неизвестных callback данных
+    """
+    telegram_id = callback.from_user.id
+    logger.info(f"Пользователь {telegram_id} нажал неизвестную кнопку: {callback.data}")
+    await callback.answer("Неизвестная команда. Используйте /help для списка доступных команд.")
