@@ -4,8 +4,8 @@ from celery import shared_task
 from orders.models import Order
 from telegramadmin_bot.config import ADMIN_TELEGRAM_IDS, ADMIN_BOT_TOKEN
 import logging
-from asgiref.sync import sync_to_async
 from aiogram import Bot, types
+import asyncio
 
 logger = logging.getLogger('telegramadmin_bot')
 
@@ -13,15 +13,15 @@ logger = logging.getLogger('telegramadmin_bot')
 @shared_task
 def send_new_order_notification(order_id):
     async def notify_admins_of_new_order(order):
-        # Получаем данные из базы данных с помощью sync_to_async
-        user_username = await sync_to_async(lambda: order.user.username)()
-        order_status = await sync_to_async(order.get_status_display)()
-        created_at = await sync_to_async(lambda: order.created_at.strftime('%Y-%m-%d %H:%M'))()
+        # Получаем данные из базы данных и формируем сообщение
+        user_username = await asyncio.to_thread(lambda: order.user.username)
+        order_status = await asyncio.to_thread(order.get_status_display)
+        created_at = await asyncio.to_thread(lambda: order.created_at.strftime('%Y-%m-%d %H:%M'))
         address, city, postal_code, phone_number, total_price = (
             order.address, order.city, order.postal_code, order.phone_number, order.total_price
         )
 
-        # Формируем сообщение
+        # Формируем текст сообщения
         message = (
             f"📦 **Новый заказ ID: {order.id}**\n"
             f"**Пользователь:** {user_username}\n"
@@ -33,14 +33,14 @@ def send_new_order_notification(order_id):
             f"**Товары:**\n"
         )
 
-        # Получаем товары с помощью sync_to_async
-        order_items = await sync_to_async(lambda: list(order.order_items.all()))()
+        # Получаем товары в заказе и добавляем их в сообщение
+        order_items = await asyncio.to_thread(lambda: list(order.order_items.all()))
         for item in order_items:
-            product_name = await sync_to_async(lambda: item.product.name)()
-            product_price = await sync_to_async(lambda: item.product.price)()
+            product_name = await asyncio.to_thread(lambda: item.product.name)
+            product_price = await asyncio.to_thread(lambda: item.product.price)
             message += f"- {product_name} x {item.quantity} = {product_price * item.quantity} ₽\n"
 
-        # Отправляем сообщение админам с корректным закрытием бота
+        # Отправляем сообщение каждому администратору с корректным закрытием бота
         async with Bot(token=ADMIN_BOT_TOKEN) as bot:
             detail_button = types.InlineKeyboardButton(text="Детали заказа", callback_data=f"detail_{order.id}")
             change_status_button = types.InlineKeyboardButton(text="Изменить статус", callback_data=f"change_{order.id}")
@@ -58,9 +58,8 @@ def send_new_order_notification(order_id):
                     logger.error(f"Ошибка при отправке уведомления администратору {admin_id}: {e}")
 
     try:
-        # Используем sync_to_async для обращения к базе данных в синхронном контексте
-        order = sync_to_async(Order.objects.prefetch_related('order_items__product').get)(id=order_id)
-        # Запускаем асинхронную функцию для отправки уведомлений
-        sync_to_async(notify_admins_of_new_order)(order)
+        # Получаем заказ и запускаем асинхронную функцию уведомления
+        order = Order.objects.prefetch_related('order_items__product').get(id=order_id)
+        asyncio.run(notify_admins_of_new_order(order))
     except Order.DoesNotExist:
         logger.error(f"Заказ с ID {order_id} не найден.")

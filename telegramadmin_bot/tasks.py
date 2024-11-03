@@ -24,7 +24,7 @@ def send_new_order_notification(order_id):
         # Формируем текст сообщения
         message = (
             f"📦 **Новый заказ ID: {order.id}**\n"
-            f"**Пользователь:** {user_username}\n"
+            f"👤 **Пользователь:** {user_username}\n"
             f"**Статус:** {order_status}\n"
             f"**Дата:** {created_at}\n"
             f"**Адрес:** {address}, {city}, {postal_code}\n"
