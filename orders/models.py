@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.conf import settings
+from django.db.models import Sum, F, DecimalField
 from products.models import Product
 
 class Order(models.Model):
@@ -27,6 +28,13 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order {self.id} by {self.user.username}"
+
+    def update_total_price(self):
+        total = self.order_items.aggregate(
+            total=Sum(F('product__price') * F('quantity'), output_field=DecimalField())
+        )['total'] or 0
+        self.total_price = total
+        self.save(update_fields=['total_price'])
 
 
 class OrderItem(models.Model):
