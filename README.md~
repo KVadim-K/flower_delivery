@@ -51,7 +51,7 @@ celery -A flower_delivery worker -l info -P solo
 
 
 ```bash
-python manage.py run_admin_bot
+python manage.py run_admin_boto
 ```
 
 ```bash
@@ -98,7 +98,7 @@ python telegram_bot/bot/main.py
     - products/ - приложение для работы с товарами.
     - reports/ - приложение для генерации отчётов.
     - reviews/ - приложение для работы с отзывами.
-    - telegram_bot/ и telegramadmin_bot/ - боты для оставления и отслеживания заказов пользователями, уведомлений и администрирования.
+    - telegram_bot/ и telegramadmin_bot/ - боты для уведомлений и администрирования.
 
 ### Серверная часть (Backend)
 Проект построен на Django и включает:
@@ -110,7 +110,7 @@ python telegram_bot/bot/main.py
 ### Боты
 Проект включает два Telegram-бота:
 
-- Основной бот (telegram_bot) — для оставления и отслеживания заказов пользователей.
+- Основной бот (telegram_bot) — для уведомлений пользователей.
 - Админ-бот (telegramadmin_bot) — для уведомлений и команд администратора.
 
 Команды админ-бота:
