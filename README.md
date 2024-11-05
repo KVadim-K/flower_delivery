@@ -121,12 +121,7 @@ python telegram_bot/bot/main.py
 Для запуска тестов используйте команду:
 
 ```bash
-python manage.py test cart.tests
-python manage.py test orders.tests
-python manage.py test products.tests
-python manage.py test reviews.tests
-python manage.py test users.tests
-python manage.py test telegram_bot.tests.test_bot
+python manage.py test --pattern="test_*.py"
 ```
 
 ### Авторские права и лицензия
