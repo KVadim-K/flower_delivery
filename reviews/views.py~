@@ -11,6 +11,8 @@ from django.contrib import messages  # Импортируем сообщения
 # Ограничение на Однократный Отзыв: Проверяем, не оставлял ли пользователь уже отзыв на этот продукт.
 # Если да, добавляем ошибку в форму.
 
+from django.contrib import messages  # Импортируем сообщения
+
 @login_required
 def add_review(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -18,7 +20,7 @@ def add_review(request, product_id):
     # Проверяем, сделал ли пользователь заказ на этот продукт
     has_ordered = Order.objects.filter(
         user=request.user,
-        order_items__product=product  # Используем правильное имя поля
+        order_items__product=product
     ).exists()
 
     if not has_ordered:
@@ -27,8 +29,9 @@ def add_review(request, product_id):
     # Проверяем, не оставлял ли пользователь уже отзыв на этот продукт
     existing_review = Review.objects.filter(user=request.user, product=product).first()
     if existing_review:
+        # Добавляем сообщение об ошибке
         messages.error(request, "Вы уже оставили отзыв на этот продукт.")
-        return redirect('products:product_detail', pk=product.id)  # Исправленный параметр pk
+        return redirect('products:product_detail', pk=product.id)
 
     if request.method == 'POST':
         form = ReviewForm(request.POST)
@@ -38,7 +41,7 @@ def add_review(request, product_id):
             review.product = product
             review.save()
             messages.success(request, "Ваш отзыв был успешно добавлен.")
-            return redirect('products:product_detail', pk=product.id)  # Исправленный параметр pk
+            return redirect('products:product_detail', pk=product.id)
     else:
         form = ReviewForm()
 

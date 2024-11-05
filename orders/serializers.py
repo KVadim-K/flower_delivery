@@ -2,7 +2,6 @@
 
 from rest_framework import serializers
 from .models import Order, OrderItem
-from products.models import Product
 from django.utils import timezone
 
 class OrderItemSerializer(serializers.ModelSerializer):
