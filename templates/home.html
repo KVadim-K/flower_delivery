@@ -1,5 +1,3 @@
-<!-- templates/home.html -->
-
 {% extends "base.html" %}
 {% load static %}
 
@@ -12,6 +10,18 @@
         <h1>Добро пожаловать в FlowerDelivery!</h1>
         <p>Дарите радость и красоту с нашими свежими цветами, доставленными прямо к вам.</p>
         <a href="{% url 'products:product_list' %}" class="btn btn-primary">Перейти в каталог</a>
+
+        <!-- Ссылки на ботов -->
+        <div class="bot-links">
+            <a href="https://t.me/Flower01Delivery_Bot" class="bot-btn">
+                <img src="{% static 'img/Flower_delivery.jpg' %}" alt="Основной бот" class="bot-icon">
+                Основной бот
+            </a>
+            <a href="https://t.me/FlowerDeliveryAdmin_Bot" class="bot-btn">
+                <img src="{% static 'img/Adminbot.png' %}" alt="Админ-бот" class="bot-icon">
+                Админ-бот
+            </a>
+        </div>
     </div>
 </div>
 

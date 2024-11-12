@@ -99,3 +99,65 @@
     font-size: 1rem;
     color: #666;
 }
+
+/* Стили для партиклов */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: particleMove 20s linear infinite;
+    top: calc(100% * var(--y));
+    left: calc(100% * var(--x));
+}
+
+@keyframes particleMove {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(100px, -100px);
+    }
+}
+
+.bot-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.bot-btn {
+    display: inline-flex;
+    align-items: center;
+    background-color: #28a745;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+}
+
+.bot-btn:hover {
+    background-color: #218838;
+}
+
+.bot-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    border-radius: 50%;
+}

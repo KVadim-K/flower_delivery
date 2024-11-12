@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
-    # Если у вас есть дополнительные поля для профиля, добавьте их здесь
+    # Добавьте дополнительные поля профиля, если необходимо
 
     def __str__(self):
         return f"Профиль пользователя {self.user.username}"
@@ -24,4 +24,8 @@ class Profile(models.Model):
 def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
-    instance.profile.save()
+    else:
+        # Используем get_or_create для обеспечения наличия профиля
+        profile, created = Profile.objects.get_or_create(user=instance)
+        if not created:
+            profile.save()

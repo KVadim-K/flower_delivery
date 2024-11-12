@@ -130,3 +130,34 @@
         transform: translate(100px, -100px);
     }
 }
+
+.bot-links {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px; /* Увеличенный отступ сверху */
+}
+
+.bot-btn {
+    display: inline-flex;
+    align-items: center;
+    background-color: #28a745;
+    color: #ffffff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-weight: 500;
+}
+
+.bot-btn:hover {
+    background-color: #218838;
+}
+
+.bot-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 10px;
+    border-radius: 50%;
+}

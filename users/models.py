@@ -21,11 +21,10 @@ class Profile(models.Model):
         return f"Профиль пользователя {self.user.username}"
 
 @receiver(post_save, sender=CustomUser)
-def create_or_update_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-    else:
-        # Используем get_or_create для обеспечения наличия профиля
-        profile, created = Profile.objects.get_or_create(user=instance)
-        if not created:
-            profile.save()
+def create_or_update_user_profile(sender: 'CustomUser', instance: CustomUser, created: bool, **kwargs):
+    # Создаем профиль или получаем существующий
+    Profile.objects.get_or_create(user=instance)
+    # Если профиль уже существует, его можно обновить при необходимости
+    if not created:
+        instance.profile.save()
+
