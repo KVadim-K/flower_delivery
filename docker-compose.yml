@@ -1,34 +1,81 @@
-version: '3.8'
-
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile.backend
-    container_name: flower_backend
+  web:
+    build: .
+    container_name: django_backend
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
+      - ./db.sqlite3:/app/db.sqlite3
     ports:
       - "8000:8000"
-
-  bot:
-    build:
-      context: .
-      dockerfile: Dockerfile.bot
-    container_name: flower_bot
+    depends_on:
+      - redis
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
-      - API_URL=http://backend:8000/api/
+      - ADMIN_BOT_TOKEN=${ADMIN_BOT_TOKEN}
+      - ADMIN_TELEGRAM_IDS=${ADMIN_TELEGRAM_IDS}
+      - ADMIN_API_TOKEN=${ADMIN_API_TOKEN}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - flower_network
+
+  celery:
+    build: .
+    container_name: celery_worker
+    command: celery -A flower_delivery worker -l info
+    volumes:
+      - .:/app
     depends_on:
-      - backend
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - flower_network
+
+  client_bot:
+    build:
+      context: .
+      dockerfile: telegram_bot/Dockerfile
+    container_name: client_bot
+    command: python telegram_bot/bot/main.py  # команда для запуска client_bot
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      API_URL: http://web:8000
+    networks:
+      - flower_network
 
   admin_bot:
     build:
       context: .
-      dockerfile: Dockerfile.admin_bot
-    container_name: flower_admin_bot
-    environment:
-      - ADMIN_BOT_TOKEN=${ADMIN_BOT_TOKEN}
-      - API_URL=http://backend:8000/api/
+      dockerfile: telegramadmin_bot/Dockerfile
+    container_name: admin_bot
+    command: python manage.py run_admin_bot  # команда для запуска admin_bot
+    volumes:
+      - .:/app
     depends_on:
-      - backend
+      - web
+    environment:
+      ADMIN_BOT_TOKEN: ${ADMIN_BOT_TOKEN}
+      API_URL: http://web:8000
+      ADMIN_API_TOKEN: ${ADMIN_API_TOKEN}
+    networks:
+      - flower_network
+
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - flower_network
+
+networks:
+  flower_network:
+    driver: bridge

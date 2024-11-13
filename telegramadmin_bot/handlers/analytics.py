@@ -92,34 +92,43 @@ async def order_analytics(message: types.Message):
         if not orders_per_day:
             await message.reply("📉 **Нет данных для построения графика.**")
         else:
-            # Визуализация данных: Заказы по дням
-            days = [item['day'] for item in orders_per_day]
-            order_counts = [item['count'] for item in orders_per_day]
-
             buf = io.BytesIO()
 
+            # Предположим, что `orders_per_day` и `sales_per_day` уже содержат соответствующие данные
+            days = [item['day'] for item in orders_per_day]
+            order_counts = [item['count'] for item in orders_per_day]
+            sales = [item['total_sales'] for item in sales_per_day]
             def plot():
-                plt.figure(figsize=(10, 5))
-                plt.plot(days, order_counts, marker='o', linestyle='-', color='blue')
-                plt.title('Количество заказов по дням')  # Удалены эмодзи
-                plt.xlabel('Дата')  # Удалены эмодзи
-                plt.ylabel('Количество заказов')  # Удалены эмодзи
+                fig, ax1 = plt.subplots(figsize=(10, 5))
+
+                # Линия количества заказов
+                ax1.plot(days, order_counts, marker='o', linestyle='-', color='blue', label="Количество заказов")
+                ax1.set_xlabel('Дата')
+                ax1.set_ylabel('Количество заказов', color='blue')
+                ax1.tick_params(axis='y', labelcolor='blue')
+
+                # Вторая ось для продаж
+                ax2 = ax1.twinx()
+                ax2.plot(days, sales, marker='x', linestyle='--', color='green', label="Продажи")
+                ax2.set_ylabel('Продажи (₽)', color='green')
+                ax2.tick_params(axis='y', labelcolor='green')
+
+                fig.tight_layout()
+                plt.title('Продажи и количество заказов по дням')
                 plt.grid(True)
-                plt.tight_layout()
                 plt.savefig(buf, format='png')
                 plt.close()
 
-            # Запускаем plotting в отдельном потоке
+            # Запуск построения графика в отдельном потоке
             await asyncio.to_thread(plot)
             buf.seek(0)
 
-            # Обернем буфер в BufferedInputFile
-            input_file = BufferedInputFile(buf.getvalue(), filename='orders_per_day.png')
+            # Обернем буфер в BufferedInputFile для отправки
+            input_file = BufferedInputFile(buf.getvalue(), filename='sales_and_orders_per_day.png')
 
-            # Отправка графика
             await message.reply_photo(
                 input_file,
-                caption="📊 **График количества заказов по дням** 📊",
+                caption="📊 **График количества заказов и продаж по дням** 📊",
                 parse_mode='Markdown'
             )
 

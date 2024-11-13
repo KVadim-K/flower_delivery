@@ -30,8 +30,7 @@ SECRET_KEY = 'django-insecure-%+wty+6+g8negp0b4lml(%$zw*z6=4#@zvjr=%oe#3g^iyrks1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["web", "localhost", "127.0.0.1"]
 
 # Application definition
 
@@ -188,8 +187,8 @@ LOGOUT_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Настройки для Celery
-CELERY_BROKER_URL = 'redis://localhost:6380/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6380/0'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

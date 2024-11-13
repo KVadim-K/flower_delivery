@@ -162,3 +162,8 @@ cython_debug/
 bot.log
 telegram_bot/bot.log~
 *.log~
+.dockerignore
+*.yml
+Dockerfile
+telegram_bot/Dockerfile~
+docker-compose.yml~
