@@ -30,7 +30,8 @@ SECRET_KEY = 'django-insecure-%+wty+6+g8negp0b4lml(%$zw*z6=4#@zvjr=%oe#3g^iyrks1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["web", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*", "web", "localhost", "127.0.0.1", "213.171.31.251", "example.com"]
+
 
 # Application definition
 
@@ -180,11 +181,18 @@ SITE_ID = 1
 # Django Allauth Settings
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # 'none', 'mandatory', 'optional'
+ACCOUNT_EMAIL_VERIFICATION = 'none'  # 'none', 'mandatory', 'optional'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'd3liveryflower@yandex.ru'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False  # Не включайте одновременно SSL и TLS
+EMAIL_HOST_USER = 'd3liveryflower@yandex.ru'
+EMAIL_HOST_PASSWORD = 'mowljpghjgotaegj'
 
 # Настройки для Celery
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
