@@ -6,10 +6,6 @@ services:
     volumes:
       - .:/app
       - ./db.sqlite3:/app/db.sqlite3
-    ports:
-      - "8000:8000"
-    depends_on:
-      - redis
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
       - ADMIN_BOT_TOKEN=${ADMIN_BOT_TOKEN}
@@ -39,7 +35,7 @@ services:
       context: .
       dockerfile: telegram_bot/Dockerfile
     container_name: client_bot
-    command: python telegram_bot/bot/main.py  # команда для запуска client_bot
+    command: python telegram_bot/bot/main.py
     volumes:
       - .:/app
     depends_on:
@@ -55,7 +51,7 @@ services:
       context: .
       dockerfile: telegramadmin_bot/Dockerfile
     container_name: admin_bot
-    command: python manage.py run_admin_bot  # команда для запуска admin_bot
+    command: python manage.py run_admin_bot
     volumes:
       - .:/app
     depends_on:
@@ -67,14 +63,27 @@ services:
     networks:
       - flower_network
 
-
   redis:
     image: redis:latest
     container_name: redis
-    ports:
-      - "6379:6379"
     networks:
       - flower_network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # Основной конфиг nginx
+      - ./nginx/ssl:/etc/nginx/ssl:ro               # SSL сертификаты
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro         # Виртуальные хосты
+    depends_on:
+      - web
+    networks:
+      - flower_network
+
 
 networks:
   flower_network:

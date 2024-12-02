@@ -167,3 +167,4 @@ telegram_bot/bot.log~
 Dockerfile
 telegram_bot/Dockerfile~
 docker-compose.yml~
+/staticfiles/img/favicon.ico

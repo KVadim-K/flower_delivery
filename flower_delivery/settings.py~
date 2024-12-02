@@ -25,12 +25,23 @@ ADMIN_TELEGRAM_IDS = [int(id.strip()) for id in ADMIN_TELEGRAM_IDS_RAW.split(','
 ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%+wty+6+g8negp0b4lml(%$zw*z6=4#@zvjr=%oe#3g^iyrks1'
+SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1')
 
-ALLOWED_HOSTS = ["*", "web", "localhost", "127.0.0.1", "213.171.31.251", "example.com"]
+
+ALLOWED_HOSTS = [
+    "vakrest.ru",
+    "localhost",
+    "127.0.0.1",
+    "213.171.31.251",
+    "django_backend",
+    "api.ipify.org",
+    "example.com",
+    "bd5444d7cde5",
+]
+CSRF_TRUSTED_ORIGINS = ['https://45c1-31-23-218-147.ngrok-free.app', 'http://vaktest.ru', 'https://vaktest.ru']  # Добавляем URL-адрес сайта
 
 
 # Application definition
@@ -57,6 +68,7 @@ INSTALLED_APPS = [
     # Другие сторонние приложения (например, для аналитики)
     'rest_framework',
     'rest_framework.authtoken',
+    'social_django',
 
     # Ваши приложения
     'users.apps.UsersConfig',
@@ -163,6 +175,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Стандартный бэкенд Django
     'allauth.account.auth_backends.AuthenticationBackend',  # Бэкенд для django-allauth
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.vk.VKOAuth2',
+    'social_core.backends.telegram.TelegramAuth',
 ]
 
 REST_FRAMEWORK = {
@@ -185,26 +201,60 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'  # 'none', 'mandatory', 'optional'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-DEFAULT_FROM_EMAIL = 'd3liveryflower <d3liveryflower@yandex.ru>'
+DEFAULT_FROM_EMAIL = 'd3liveryflower@yandex.ru'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_USE_TLS = False  # Не включайте одновременно SSL и TLS
 EMAIL_HOST_USER = 'd3liveryflower@yandex.ru'
-EMAIL_HOST_PASSWORD = 'mowljpghjgotaegj'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
 # Настройки для Celery
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
-# Настройка для хранения результатов задач Celery в базе данных Django
-CELERY_RESULT_BACKEND = 'django-db'
 
+# Настройки URL
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+
+
+# Загрузка ключей и секретов из .env файла
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/oauth/complete/google-oauth2/'
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_KEY')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_SECRET')
+SOCIAL_AUTH_VK_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/oauth/complete/vk-oauth2/'
+SOCIAL_AUTH_GITHUB_OAUTH2_REDIRECT_URI = "https://vakrest.ru/oauth/complete/github/"  # Установить на постпродакшне
+
+SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY')
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET')
+SOCIAL_AUTH_GITHUB_OAUTH2_REDIRECT_URI = "http://127.0.0.1:8000/oauth/complete/github/"
+
+SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = os.environ.get('SOCIAL_AUTH_TELEGRAM_BOT_TOKEN')
+
+
+# Другие настройки
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
 
 
 LOGGING = {
