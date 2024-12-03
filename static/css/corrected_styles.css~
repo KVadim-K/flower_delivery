@@ -25,18 +25,6 @@
 
     /* Шрифты */
     --font-family: 'Roboto', sans-serif;
-
-    /* Анимации */
-    --animation-duration: 0.6s;
-    --animation-ease: ease-out;
-}
-
-/* Предпочтение пользователя: уменьшенные или отключённые анимации */
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
-    }
 }
 
 /* Общие настройки */
@@ -51,18 +39,6 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
-}
-
-/* Анимация плавного появления */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* Ссылки */
@@ -120,9 +96,6 @@ a:focus, button:focus {
     font-weight: 500;
     font-size: 1.1rem;
     transition: color 0.3s ease, transform 0.2s ease;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 0.3s;
 }
 
 .nav-link:hover {
@@ -160,7 +133,6 @@ a:focus, button:focus {
 
     .nav-link {
         padding: 0.5rem 0;
-        animation-delay: 0s; /* Сброс задержки анимации для мобильных */
     }
 
     .btn-buy-now {
@@ -184,9 +156,6 @@ a:focus, button:focus {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 0.5s;
 }
 
 /* Сообщения */
@@ -194,9 +163,6 @@ a:focus, button:focus {
     list-style-type: none;
     margin: 0;
     padding: 1rem;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 0.6s;
 }
 
 .messages li {
@@ -234,9 +200,6 @@ a:focus, button:focus {
     padding: 0 1rem;
     flex-wrap: wrap;
     text-align: center;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 0.7s;
 }
 
 .footer__social a {
@@ -260,9 +223,6 @@ h1, h2, h3 {
 p {
     margin-bottom: 1rem;
     line-height: 1.6;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 0.8s;
 }
 
 /* Заголовки разделов */
@@ -273,9 +233,6 @@ p {
     text-align: center;
     margin: 2rem 0 1.5rem 0;
     position: relative;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 0.4s;
 }
 
 .section-title::after {
@@ -292,9 +249,6 @@ p {
 .product-list {
     padding: 2rem 1rem;
     background-color: var(--light-background);
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 0.9s;
 }
 
 .product-grid {
@@ -305,7 +259,6 @@ p {
     margin: auto;
 }
 
-/* Медиа-запросы для адаптивности */
 @media (max-width: 1200px) {
     .product-grid {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -334,10 +287,7 @@ p {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 450px; /* Заменена фиксированная высота на минимальную */
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 1s;
+    height: 450px; /* Рассмотрите использование min-height для большей гибкости */
 }
 
 .product-card:hover {
@@ -432,7 +382,6 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s ease;
 }
 
 .btn-add-to-cart:hover {
@@ -469,9 +418,6 @@ p {
     border-radius: 10px;
     box-shadow: 0 4px 8px var(--shadow-color);
     gap: 2rem;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 1.1s;
 }
 
 .product-detail__image {
@@ -516,9 +462,6 @@ p {
     color: #666;
     line-height: 1.6;
     margin-bottom: 1.5rem;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 1.2s;
 }
 
 /* Средний рейтинг */
@@ -527,12 +470,6 @@ p {
     font-weight: 600;
     margin-left: 0.5rem;
     color: #ff9800;
-}
-
-.average-rating, .star-rating {
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 1.3s;
 }
 
 /* Рейтинг в виде звёзд */
@@ -562,9 +499,6 @@ p {
     list-style-type: none;
     padding: 0;
     margin-top: 1rem;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 1.4s;
 }
 
 .review-item {
@@ -573,9 +507,6 @@ p {
     border: 1px solid var(--border-color);
     border-radius: 5px;
     background-color: var(--light-background);
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 1.5s;
 }
 
 .review-item strong {
@@ -611,9 +542,6 @@ p {
     color: var(--primary-color);
     text-decoration: underline;
     transition: color 0.3s ease;
-    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
-    opacity: 0;
-    animation-delay: 1.6s;
 }
 
 .review-link:hover {
