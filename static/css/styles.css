@@ -29,6 +29,31 @@
     /* Анимации */
     --animation-duration: 0.6s;
     --animation-ease: ease-out;
+
+    /* Дополнительные переменные для тем */
+    --footer-bg-color: #333;
+    --footer-text-color: #fff;
+
+    --btn-add-to-cart-bg: #ff5252;
+    --btn-add-to-cart-hover-bg: #ff1744;
+
+    --btn-buy-now-bg: #ff5722;
+    --btn-buy-now-hover-bg: #e64a19;
+
+    /* Цвета для светлой темы */
+    --light-theme-bg: #fff;
+    --light-theme-text: #333;
+    --light-footer-bg-color: #f1f1f1;
+    --light-footer-text-color: #333;
+
+    /* Цвет иконок социальных сетей в светлой теме */
+    --light-footer-social-color: #333; /* Тёмный цвет для видимости на светлом фоне */
+
+    --light-btn-add-to-cart-bg: #ff7979;
+    --light-btn-add-to-cart-hover-bg: #ff6b6b;
+
+    --light-btn-buy-now-bg: #ff8a65;
+    --light-btn-buy-now-hover-bg: #ff7043;
 }
 
 /* Предпочтение пользователя: уменьшенные или отключённые анимации */
@@ -36,6 +61,89 @@
     *, *::before, *::after {
         animation: none !important;
         transition: none !important;
+    }
+}
+
+/* Медиа-запросы для автоматического определения предпочтительной темы */
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: var(--light-theme-bg);
+        color: var(--light-theme-text);
+    }
+
+    .footer {
+        background-color: var(--light-footer-bg-color);
+        color: var(--light-footer-text-color);
+    }
+
+    .footer__social a {
+        color: var(--light-footer-social-color);
+    }
+
+    /* Обновлённые стили для иконок социальных сетей в светлой теме */
+    .footer__social a i {
+        color: var(--light-footer-social-color) !important;
+    }
+
+    .footer__content a {
+        color: var(--light-footer-text-color);
+    }
+
+    .btn-add-to-cart {
+        background-color: var(--light-btn-add-to-cart-bg);
+    }
+
+    .btn-add-to-cart:hover {
+        background-color: var(--light-btn-add-to-cart-hover-bg);
+    }
+
+    .btn-buy-now {
+        background-color: var(--light-btn-buy-now-bg);
+    }
+
+    .btn-buy-now:hover {
+        background-color: var(--light-btn-buy-now-hover-bg);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: var(--background-color); /* Тёмная тема: исходные цвета */
+        color: var(--text-color);
+    }
+
+    .footer {
+        background-color: var(--footer-bg-color);
+        color: var(--footer-text-color);
+    }
+
+    .footer__social a {
+        color: var(--footer-text-color);
+    }
+
+    /* Стили для иконок социальных сетей в тёмной теме */
+    .footer__social a i {
+        color: var(--footer-text-color);
+    }
+
+    .footer__content a {
+        color: var(--footer-text-color);
+    }
+
+    .btn-add-to-cart {
+        background-color: var(--btn-add-to-cart-bg);
+    }
+
+    .btn-add-to-cart:hover {
+        background-color: var(--btn-add-to-cart-hover-bg);
+    }
+
+    .btn-buy-now {
+        background-color: var(--btn-buy-now-bg);
+    }
+
+    .btn-buy-now:hover {
+        background-color: var(--btn-buy-now-hover-bg);
     }
 }
 
@@ -51,6 +159,46 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
+}
+
+/* Светлая тема */
+body.light-theme {
+    background-color: var(--light-theme-bg);
+    color: var(--light-theme-text);
+}
+
+body.light-theme .footer {
+    background-color: var(--light-footer-bg-color);
+    color: var(--light-footer-text-color);
+}
+
+body.light-theme .footer__social a {
+    color: var(--light-footer-social-color);
+}
+
+/* Обновлённые стили для иконок социальных сетей в светлой теме */
+body.light-theme .footer__social a i {
+    color: var(--light-footer-social-color) !important;
+}
+
+body.light-theme .footer__content a {
+    color: var(--light-footer-text-color);
+}
+
+body.light-theme .btn-add-to-cart {
+    background-color: var(--light-btn-add-to-cart-bg);
+}
+
+body.light-theme .btn-add-to-cart:hover {
+    background-color: var(--light-btn-add-to-cart-hover-bg);
+}
+
+body.light-theme .btn-buy-now {
+    background-color: var(--light-btn-buy-now-bg);
+}
+
+body.light-theme .btn-buy-now:hover {
+    background-color: var(--light-btn-buy-now-hover-bg);
 }
 
 /* Анимация плавного появления */
@@ -133,13 +281,23 @@ a:focus, button:focus {
 .navbar-toggler {
     border: none;
     background-color: transparent;
+    cursor: pointer;
 }
 
+/* Обновлённая иконка гамбургера с тёмными линиями для лучшей видимости */
 .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%2851,51,51,0.8%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    width: 30px;
+    height: 30px;
 }
 
-/* Поддержка адаптивности */
+/* Унифицированные медиа-запросы для адаптивности */
+@media (max-width: 1200px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
     .navbar-nav {
         flex-direction: column;
@@ -170,6 +328,10 @@ a:focus, button:focus {
     .product-detail__info {
         width: 100%;
         text-align: center;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -220,8 +382,8 @@ a:focus, button:focus {
 
 /* Подвал */
 .footer {
-    background-color: #333;
-    color: #fff;
+    background-color: var(--footer-bg-color);
+    color: var(--footer-text-color);
     padding: 1.5rem 0;
 }
 
@@ -239,14 +401,33 @@ a:focus, button:focus {
     animation-delay: 0.7s;
 }
 
+/* Иконки социальных сетей в футере */
 .footer__social a {
-    color: #fff;
+    color: var(--footer-text-color);
     margin-left: 1rem;
     font-size: 1.2rem;
     transition: color 0.3s ease;
 }
 
+.footer__social a i {
+    color: inherit; /* Наследовать цвет от родителя */
+    transition: color 0.3s ease;
+}
+
 .footer__social a:hover {
+    color: var(--primary-color);
+}
+
+.footer__social a:hover i {
+    color: var(--primary-color);
+}
+
+.footer__content a {
+    color: var(--footer-text-color);
+    transition: color 0.3s ease;
+}
+
+.footer__content a:hover {
     color: var(--primary-color);
 }
 
@@ -258,6 +439,7 @@ h1, h2, h3 {
 }
 
 p {
+    color: var(--text-color);
     margin-bottom: 1rem;
     line-height: 1.6;
     animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
@@ -303,25 +485,6 @@ p {
     gap: 1.5rem;
     max-width: 1200px;
     margin: auto;
-}
-
-/* Медиа-запросы для адаптивности */
-@media (max-width: 1200px) {
-    .product-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-}
-
-@media (max-width: 768px) {
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .product-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* Карточка продукта */
@@ -427,7 +590,7 @@ p {
 
 /* Кнопка для добавления в корзину на странице товара */
 .btn-add-to-cart {
-    background-color: #ff5252;
+    background-color: var(--btn-add-to-cart-bg);
     padding: 0.5rem 1.5rem; /* Стандартный размер */
     display: flex;
     align-items: center;
@@ -436,7 +599,7 @@ p {
 }
 
 .btn-add-to-cart:hover {
-    background-color: #ff1744;
+    background-color: var(--btn-add-to-cart-hover-bg);
 }
 
 .btn-add-to-cart i {
@@ -446,7 +609,7 @@ p {
 
 /* Кнопка для покупки на странице товара */
 .btn-buy-now {
-    background-color: #ff5722;
+    background-color: var(--btn-buy-now-bg);
     padding: 0.5rem 1.5rem; /* Стандартный размер */
     width: 150px; /* Уменьшенная фиксированная ширина */
     text-align: center;
@@ -454,7 +617,7 @@ p {
 }
 
 .btn-buy-now:hover {
-    background-color: #e64a19;
+    background-color: var(--btn-buy-now-hover-bg);
     transform: translateY(-2px);
 }
 
@@ -527,18 +690,17 @@ p {
     font-weight: 600;
     margin-left: 0.5rem;
     color: #ff9800;
-}
-
-.average-rating, .star-rating {
     animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
     opacity: 0;
     animation-delay: 1.3s;
 }
 
-/* Рейтинг в виде звёзд */
 .star-rating {
     display: inline-block;
     margin-left: 0.5rem;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 1.3s;
 }
 
 .star-rating .star {
@@ -618,38 +780,4 @@ p {
 
 .review-link:hover {
     color: var(--primary-hover);
-}
-
-/* Медиа-запросы для адаптивности */
-/* Повторяются для правильного каскадирования, могут быть объединены */
-@media (max-width: 1200px) {
-    .product-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-}
-
-@media (max-width: 768px) {
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .product-detail {
-        flex-direction: column;
-        align-items: center;
-        padding: 1rem;
-    }
-
-    .product-detail__info {
-        width: 100%;
-        text-align: center;
-    }
-
-    .btn-buy-now {
-        width: 100%; /* Изменение ширины кнопки на мобильных устройствах */
-    }
-}
-
-@media (max-width: 480px) {
-    .product-grid {
-        grid-template-columns: 1fr;
-    }
 }

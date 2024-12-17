@@ -1,3 +1,156 @@
+/* Определение CSS-переменных для упрощенного управления стилями */
+:root {
+    /* Цветовая палитра */
+    --primary-color: #e91e63;
+    --primary-hover: #d81b60;
+    --secondary-color: #9c27b0;
+    --secondary-hover: #7b1fa2;
+    --success-color: #388e3c;
+    --error-color: #d32f2f;
+    --background-color: #f5f5f5;
+    --text-color: #333;
+    --light-background: #f9f9f9;
+    --light-text: #555;
+    --border-color: #ddd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-hover-color: rgba(0, 0, 0, 0.2);
+    --star-filled-color: #ffcc00;
+    --star-empty-color: #ccc;
+    --focus-outline: #e91e63;
+
+    /* Размеры */
+    --btn-padding: 0.75rem 1.5rem;
+    --btn-font-size: 1rem;
+    --btn-border-radius: 5px;
+
+    /* Шрифты */
+    --font-family: 'Roboto', sans-serif;
+
+    /* Анимации */
+    --animation-duration: 0.6s;
+    --animation-ease: ease-out;
+
+    /* Дополнительные переменные для тем */
+    --footer-bg-color: #333;
+    --footer-text-color: #fff;
+
+    --btn-add-to-cart-bg: #ff5252;
+    --btn-add-to-cart-hover-bg: #ff1744;
+
+    --btn-buy-now-bg: #ff5722;
+    --btn-buy-now-hover-bg: #e64a19;
+
+    /* Цвета для светлой темы */
+    --light-theme-bg: #fff;
+    --light-theme-text: #333;
+    --light-footer-bg-color: #f1f1f1;
+    --light-footer-text-color: #333;
+
+    /* Обновлённый цвет иконок социальных сетей для светлой темы */
+    --light-footer-social-color: #333; /* Тёмный цвет для лучшей видимости */
+
+    --light-btn-add-to-cart-bg: #ff7979;
+    --light-btn-add-to-cart-hover-bg: #ff6b6b;
+
+    --light-btn-buy-now-bg: #ff8a65;
+    --light-btn-buy-now-hover-bg: #ff7043;
+}
+
+/* Предпочтение пользователя: уменьшенные или отключённые анимации */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* Медиа-запросы для автоматического определения предпочтительной темы */
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: var(--light-theme-bg);
+        color: var(--light-theme-text);
+    }
+
+    .footer {
+        background-color: var(--light-footer-bg-color);
+        color: var(--light-footer-text-color);
+    }
+
+    .footer__social a {
+        color: var(--light-footer-social-color);
+    }
+
+    /* Добавленные стили для иконок социальных сетей */
+    .footer__social a i,
+    .footer__social a svg {
+        color: var(--light-footer-social-color);
+        fill: var(--light-footer-social-color);
+    }
+
+    .footer__content a {
+        color: var(--light-footer-text-color);
+    }
+
+    .btn-add-to-cart {
+        background-color: var(--light-btn-add-to-cart-bg);
+    }
+
+    .btn-add-to-cart:hover {
+        background-color: var(--light-btn-add-to-cart-hover-bg);
+    }
+
+    .btn-buy-now {
+        background-color: var(--light-btn-buy-now-bg);
+    }
+
+    .btn-buy-now:hover {
+        background-color: var(--light-btn-buy-now-hover-bg);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: var(--background-color); /* Тёмная тема: исходные цвета */
+        color: var(--text-color);
+    }
+
+    .footer {
+        background-color: var(--footer-bg-color);
+        color: var(--footer-text-color);
+    }
+
+    .footer__social a {
+        color: var(--footer-text-color);
+    }
+
+    /* Добавленные стили для иконок социальных сетей */
+    .footer__social a i,
+    .footer__social a svg {
+        color: var(--footer-text-color);
+        fill: var(--footer-text-color);
+    }
+
+    .footer__content a {
+        color: var(--footer-text-color);
+    }
+
+    .btn-add-to-cart {
+        background-color: var(--btn-add-to-cart-bg);
+    }
+
+    .btn-add-to-cart:hover {
+        background-color: var(--btn-add-to-cart-hover-bg);
+    }
+
+    .btn-buy-now {
+        background-color: var(--btn-buy-now-bg);
+    }
+
+    .btn-buy-now:hover {
+        background-color: var(--btn-buy-now-hover-bg);
+    }
+}
+
 /* Общие настройки */
 * {
     margin: 0;
@@ -6,28 +159,83 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--text-color);
     line-height: 1.6;
+}
+
+/* Светлая тема */
+body.light-theme {
+    background-color: var(--light-theme-bg);
+    color: var(--light-theme-text);
+}
+
+body.light-theme .footer {
+    background-color: var(--light-footer-bg-color);
+    color: var(--light-footer-text-color);
+}
+
+body.light-theme .footer__social a {
+    color: var(--light-footer-social-color);
+}
+
+/* Добавленные стили для иконок социальных сетей в светлой теме */
+body.light-theme .footer__social a i,
+body.light-theme .footer__social a svg {
+    color: var(--light-footer-social-color);
+    fill: var(--light-footer-social-color);
+}
+
+body.light-theme .btn-add-to-cart {
+    background-color: var(--light-btn-add-to-cart-bg);
+}
+
+body.light-theme .btn-add-to-cart:hover {
+    background-color: var(--light-btn-add-to-cart-hover-bg);
+}
+
+body.light-theme .btn-buy-now {
+    background-color: var(--light-btn-buy-now-bg);
+}
+
+body.light-theme .btn-buy-now:hover {
+    background-color: var(--light-btn-buy-now-hover-bg);
+}
+
+/* Анимация плавного появления */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Ссылки */
 a {
     text-decoration: none;
-    color: #333;
+    color: var(--text-color);
     transition: color 0.3s ease;
 }
 
 a:hover {
-    color: #e91e63;
+    color: var(--primary-color);
+}
+
+a:focus, button:focus {
+    outline: 2px dashed var(--primary-color);
+    outline-offset: 4px;
 }
 
 /* Навигация */
 /* Стили для верхнего меню */
 .header {
     background: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px var(--shadow-color);
     backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
@@ -43,13 +251,13 @@ a:hover {
 .navbar-brand {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #e91e63;
+    color: var(--primary-color);
     text-transform: uppercase;
     transition: color 0.3s ease;
 }
 
 .navbar-brand:hover {
-    color: #d81b60;
+    color: var(--primary-hover);
 }
 
 .navbar-nav {
@@ -58,27 +266,40 @@ a:hover {
 }
 
 .nav-link {
-    color: #333;
+    color: var(--text-color);
     font-weight: 500;
     font-size: 1.1rem;
     transition: color 0.3s ease, transform 0.2s ease;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 0.3s;
 }
 
 .nav-link:hover {
-    color: #e91e63;
+    color: var(--primary-color);
     transform: scale(1.05);
 }
 
 .navbar-toggler {
     border: none;
     background-color: transparent;
+    cursor: pointer;
 }
 
+/* Обновлённая иконка гамбургера с тёмными линиями для лучшей видимости */
 .navbar-toggler-icon {
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%2851,51,51,0.8%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    width: 30px;
+    height: 30px;
 }
 
-/* Поддержка адаптивности */
+/* Унифицированные медиа-запросы для адаптивности */
+@media (max-width: 1200px) {
+    .product-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
     .navbar-nav {
         flex-direction: column;
@@ -94,10 +315,31 @@ a:hover {
 
     .navbar-nav.active {
         display: flex;
+        position: relative; /* Обеспечивает корректное позиционирование */
     }
 
     .nav-link {
         padding: 0.5rem 0;
+        animation-delay: 0s; /* Сброс задержки анимации для мобильных */
+    }
+
+    .btn-buy-now {
+        width: 100%; /* Изменение ширины кнопки на мобильных устройствах */
+    }
+
+    .product-detail__info {
+        width: 100%;
+        text-align: center;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -106,6 +348,9 @@ a:hover {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 0.5s;
 }
 
 /* Сообщения */
@@ -113,6 +358,9 @@ a:hover {
     list-style-type: none;
     margin: 0;
     padding: 1rem;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 0.6s;
 }
 
 .messages li {
@@ -126,18 +374,18 @@ a:hover {
 
 .messages .success {
     background-color: #d0f0c0;
-    color: #388e3c;
+    color: var(--success-color);
 }
 
 .messages .error {
     background-color: #ffccbc;
-    color: #d32f2f;
+    color: var(--error-color);
 }
 
 /* Подвал */
 .footer {
-    background-color: #333;
-    color: #fff;
+    background-color: var(--footer-bg-color);
+    color: var(--footer-text-color);
     padding: 1.5rem 0;
 }
 
@@ -150,35 +398,92 @@ a:hover {
     padding: 0 1rem;
     flex-wrap: wrap;
     text-align: center;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 0.7s;
 }
 
+/* Иконки социальных сетей в футере */
 .footer__social a {
-    color: #fff;
+    color: var(--footer-text-color);
     margin-left: 1rem;
     font-size: 1.2rem;
     transition: color 0.3s ease;
 }
 
+/* Добавленные стили для иконок социальных сетей */
+.footer__social a i,
+.footer__social a svg {
+    color: var(--footer-text-color);
+    fill: var(--footer-text-color);
+    transition: color 0.3s ease, fill 0.3s ease;
+}
+
 .footer__social a:hover {
-    color: #e91e63;
+    color: var(--primary-color);
+}
+
+.footer__social a:hover i,
+.footer__social a:hover svg {
+    color: var(--primary-color);
+    fill: var(--primary-color);
+}
+
+.footer__content a {
+    color: var(--footer-text-color);
+    transition: color 0.3s ease;
+}
+
+.footer__content a:hover {
+    color: var(--primary-color);
 }
 
 /* Заголовки */
 h1, h2, h3 {
-    color: #333;
+    color: var(--text-color);
     font-weight: 500;
     margin-bottom: 1rem;
 }
 
 p {
+    color: var(--text-color);
     margin-bottom: 1rem;
     line-height: 1.6;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 0.8s;
+}
+
+/* Заголовки разделов */
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    text-align: center;
+    margin: 2rem 0 1.5rem 0;
+    position: relative;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 0.4s;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 3px;
+    background-color: var(--primary-color);
+    margin: 0.5rem auto 0;
+    border-radius: 2px;
 }
 
 /* Страница каталога */
 .product-list {
     padding: 2rem 1rem;
-    background-color: #f9f9f9;
+    background-color: var(--light-background);
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 0.9s;
 }
 
 .product-grid {
@@ -194,26 +499,29 @@ p {
     background-color: #fff;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px var(--shadow-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 450px;
+    min-height: 450px; /* Заменена фиксированная высота на минимальную */
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 1s;
 }
 
 .product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 12px var(--shadow-hover-color);
 }
 
-/* Кликабельная область всей карточки */
 .product-card .product-link {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     color: inherit;
     text-decoration: none;
+    height: 100%;
 }
 
 .product-image {
@@ -242,12 +550,12 @@ p {
 .product-name {
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
-    color: #333;
+    color: var(--text-color);
 }
 
 .product-price {
     font-size: 0.95rem;
-    color: #e91e63;
+    color: var(--primary-color);
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
@@ -257,11 +565,11 @@ p {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    padding: var(--btn-padding);
+    font-size: var(--btn-font-size);
     font-weight: bold;
     text-align: center;
-    border-radius: 5px;
+    border-radius: var(--btn-border-radius);
     text-decoration: none;
     transition: background-color 0.3s ease, transform 0.2s ease;
     cursor: pointer;
@@ -270,43 +578,54 @@ p {
 }
 
 .btn-primary {
-    background-color: #e91e63;
+    background-color: var(--primary-color);
 }
 
 .btn-primary:hover {
-    background-color: #d81b60;
+    background-color: var(--primary-hover);
     transform: translateY(-2px);
 }
 
 .btn-secondary {
-    background-color: #9c27b0;
+    background-color: var(--secondary-color);
 }
 
 .btn-secondary:hover {
-    background-color: #7b1fa2;
+    background-color: var(--secondary-hover);
     transform: translateY(-2px);
 }
 
 /* Кнопка для добавления в корзину на странице товара */
 .btn-add-to-cart {
-    background-color: #ff5252;
+    background-color: var(--btn-add-to-cart-bg);
     padding: 0.5rem 1.5rem; /* Стандартный размер */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
 }
 
 .btn-add-to-cart:hover {
-    background-color: #ff1744;
+    background-color: var(--btn-add-to-cart-hover-bg);
+}
+
+.btn-add-to-cart i {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
 }
 
 /* Кнопка для покупки на странице товара */
 .btn-buy-now {
-    background-color: #ff5722;
+    background-color: var(--btn-buy-now-bg);
     padding: 0.5rem 1.5rem; /* Стандартный размер */
     width: 150px; /* Уменьшенная фиксированная ширина */
     text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .btn-buy-now:hover {
-    background-color: #e64a19;
+    background-color: var(--btn-buy-now-hover-bg);
+    transform: translateY(-2px);
 }
 
 /* Страница подробностей продукта */
@@ -318,8 +637,11 @@ p {
     padding: 1rem;
     background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px var(--shadow-color);
     gap: 2rem;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 1.1s;
 }
 
 .product-detail__image {
@@ -348,13 +670,13 @@ p {
 
 .product-detail__name {
     font-size: 2rem;
-    color: #333;
+    color: var(--text-color);
     margin-bottom: 1rem;
 }
 
 .product-detail__price {
     font-size: 1.5rem;
-    color: #e91e63;
+    color: var(--primary-color);
     font-weight: bold;
     margin-bottom: 1rem;
 }
@@ -364,17 +686,44 @@ p {
     color: #666;
     line-height: 1.6;
     margin-bottom: 1.5rem;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 1.2s;
 }
 
-/* Рейтинг в виде звёзд */
+/* Средний рейтинг */
+.average-rating {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    color: #ff9800;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 1.3s;
+}
+
+.star-rating {
+    display: inline-block;
+    margin-left: 0.5rem;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 1.3s;
+}
+
+.star-rating .star {
+    font-size: 1.2rem;
+    color: var(--star-filled-color); /* Цвет заполненных звёзд */
+    margin-right: 0.1rem;
+}
+
 .star {
     font-size: 1.2rem;
-    color: #ccc; /* Цвет для пустых звёзд */
+    color: var(--star-empty-color); /* Цвет для пустых звёзд */
     margin-right: 0.1rem;
 }
 
 .star.filled {
-    color: #ffcc00; /* Цвет для заполненных звёзд */
+    color: var(--star-filled-color); /* Цвет для заполненных звёзд */
 }
 
 /* Стили для отзывов */
@@ -382,30 +731,37 @@ p {
     list-style-type: none;
     padding: 0;
     margin-top: 1rem;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 1.4s;
 }
 
 .review-item {
     padding: 1rem;
     margin-bottom: 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 5px;
-    background-color: #f9f9f9;
+    background-color: var(--light-background);
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 1.5s;
 }
 
 .review-item strong {
     font-weight: bold;
-    color: #333;
+    color: var(--text-color);
 }
 
 .review-comment {
     margin-top: 0.5rem;
     font-size: 0.95rem;
-    color: #555;
+    color: var(--light-text);
 }
 
-.review-date {
-    font-size: 0.85rem;
+.review-date em {
+    font-style: normal;
     color: #999;
+    font-size: 0.85rem;
 }
 
 .rating {
@@ -416,27 +772,19 @@ p {
     margin-left: 0.5rem;
 }
 
-
-/* Медиа-запросы для адаптивности */
-@media (max-width: 1200px) {
-    .product-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
+/* Ссылка для добавления отзыва */
+.review-link {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: var(--primary-color);
+    text-decoration: underline;
+    transition: color 0.3s ease;
+    animation: fadeIn var(--animation-duration) var(--animation-ease) forwards;
+    opacity: 0;
+    animation-delay: 1.6s;
 }
 
-@media (max-width: 768px) {
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .product-detail {
-        flex-direction: column;
-        align-items: center;
-        padding: 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .product-grid {
-        grid-template-columns: 1fr;
-    }
+.review-link:hover {
+    color: var(--primary-hover);
 }
