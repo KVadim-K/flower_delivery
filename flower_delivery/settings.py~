@@ -30,6 +30,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1')
 
+USE_X_FORWARDED_HOST = True
+
 
 ALLOWED_HOSTS = [
     "vakrest.ru",
@@ -40,7 +42,10 @@ ALLOWED_HOSTS = [
     "api.ipify.org",
     "example.com",
     "bd5444d7cde5",
+    "172.27.0.2",  # IP-адрес контейнера Django
+    "172.27.0.6",
 ]
+
 CSRF_TRUSTED_ORIGINS = ['https://45c1-31-23-218-147.ngrok-free.app', 'http://vaktest.ru', 'https://vaktest.ru']  # Добавляем URL-адрес сайта
 
 
