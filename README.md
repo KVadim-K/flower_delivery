@@ -84,6 +84,11 @@ python telegram_bot/bot/main.py
 - /changestatus <id> <status> — изменить статус заказа.
 - /analytics — аналитика по заказам за последние 30 дней с графиками.
 
+
+## Демонстрация ботов
+
+![Flower Delivery Bots](FlowerDeliveryBots.gif)
+
 ### API
 Основные API-эндпоинты:
 
