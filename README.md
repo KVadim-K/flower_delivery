@@ -85,6 +85,12 @@ python telegram_bot/bot/main.py
 - /analytics — аналитика по заказам за последние 30 дней с графиками.
 
 
+## Демонстрация проекта
+
+![Flower Delivery](FlowerDelivery.gif)
+
+Ознакомьтесь с функционалом проекта через наглядную демонстрацию!
+
 ## Демонстрация ботов
 
 ![Flower Delivery Bots](FlowerDeliveryBots.gif)
@@ -121,6 +127,27 @@ python telegram_bot/bot/main.py
 Команды админ-бота:
 - Уведомления о новых заказах.
 - Возможность обновления статуса заказов.
+
+### Аутентификация через социальные сети
+
+Проект поддерживает возможность входа через социальные сети:
+
+- Google
+- GitHub
+- VK
+
+Для настройки аутентификации вам потребуется создать приложение в соответствующих сервисах и добавить ключи API в файл `.env`:
+
+```env
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=ваш_google_client_id
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=ваш_google_client_secret
+
+SOCIAL_AUTH_GITHUB_KEY=ваш_github_client_id
+SOCIAL_AUTH_GITHUB_SECRET=ваш_github_client_secret
+
+SOCIAL_AUTH_VK_OAUTH2_KEY=ваш_vk_app_id
+SOCIAL_AUTH_VK_OAUTH2_SECRET=ваш_vk_app_secret
+```
 
 ### Тестирование
 Для запуска тестов используйте команду:
