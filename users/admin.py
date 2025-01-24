@@ -14,7 +14,7 @@ class CustomUserAdmin(UserAdmin):
         ('Дополнительная информация', {'fields': ('phone', 'address', 'telegram_id')}),
     )
 
-    # Опционально: отображение новых полей в списке пользователей
+    # Отображение новых полей в списке пользователей
     list_display = UserAdmin.list_display + ('phone', 'telegram_id', 'address')
 
 # Регистрация модели CustomUser с новым админ-классом

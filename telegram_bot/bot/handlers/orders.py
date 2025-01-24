@@ -271,7 +271,6 @@ async def proceed_to_checkout_callback(callback: CallbackQuery, state: FSMContex
     cart_text = "🛒 <b>Ваш заказ:</b>\n\n"
     total_price = 0
     for item in cart:
-        # **Исправление:** Убеждаемся, что цена и количество - числа
         try:
             item_price = float(item['price'])
             item_quantity = int(item['quantity'])

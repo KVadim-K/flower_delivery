@@ -26,7 +26,6 @@ async def list_orders(message: types.Message):
         return
 
     try:
-        # Предварительно загружаем связанные объекты user и order_items__product
         orders = await sync_to_async(list)(
             Order.objects.select_related("user").prefetch_related("order_items__product").order_by('-created_at')[:10]
         )
@@ -71,7 +70,6 @@ async def order_details(message: types.Message):
     try:
         _, order_id_str = message.text.split()
         order_id = int(order_id_str)
-        # Предварительно загружаем связанные объекты user и order_items__product
         order = await sync_to_async(Order.objects.select_related("user").prefetch_related("order_items__product").get)(id=order_id)
     except (ValueError, Order.DoesNotExist):
         await message.reply("❗ Неверный формат команды или заказ не найден. Используйте: /order <id>")
@@ -138,7 +136,6 @@ async def change_status_command(message: types.Message):
 
     order_id = int(order_id_str)
     try:
-        # Предварительно загружаем связанные объекты user и order_items__product
         order = await sync_to_async(Order.objects.select_related("user").prefetch_related("order_items__product").get)(id=order_id)
     except Order.DoesNotExist:
         await message.reply("❗ Заказ не найден.")
@@ -176,7 +173,6 @@ async def callback_handler(callback_query: types.CallbackQuery):
     if data.startswith("detail_"):
         try:
             order_id = int(data.split('_')[1])
-            # Предварительно загружаем связанные объекты user и order_items__product
             order = await sync_to_async(Order.objects.select_related("user").prefetch_related("order_items__product").get)(id=order_id)
         except (ValueError, Order.DoesNotExist):
             await callback_query.answer("❗ Заказ не найден.", show_alert=True)
@@ -227,7 +223,6 @@ async def callback_handler(callback_query: types.CallbackQuery):
     elif data.startswith("change_"):
         try:
             order_id = int(data.split('_')[1])
-            # Предварительно загружаем связанные объекты order_items__product
             order = await sync_to_async(Order.objects.prefetch_related("order_items__product").get)(id=order_id)
         except (ValueError, Order.DoesNotExist):
             await callback_query.answer("❗ Заказ не найден.", show_alert=True)

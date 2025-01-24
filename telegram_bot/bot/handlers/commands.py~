@@ -30,7 +30,7 @@ async def cmd_start(message: Message, state: FSMContext):
 
     await message.answer(
         welcome_message,
-        reply_markup=navigation_kb,
+        reply_markup=navigation_kb,  # Убедитесь, что navigation_kb импортирован и настроен
         parse_mode="HTML"  # Явно указываем parse_mode
     )
 
@@ -75,7 +75,7 @@ async def cmd_link(message: Message, state: FSMContext):
 
     # Сохранение username в состоянии для дальнейшей обработки через callback
     await state.update_data(username=username)
-    await state.set_state("linking_account")
+    await state.set_state("linking_account")  # Предполагаем, что у вас есть состояние для связывания
 
     # Отправка сообщения с подтверждением связывания
     confirm_link_kb = InlineKeyboardMarkup(
@@ -103,7 +103,8 @@ async def cmd_order(message: Message, state: FSMContext):
     telegram_id = message.from_user.id
     logger.info(f"Пользователь {telegram_id} инициирует создание заказа через команду /order.")
 
-
+    # Здесь можно вызвать функцию инициирования заказа, например, через callback или напрямую
+    # Например, можно отправить пользователю список товаров или перейти в состояние создания заказа
     await message.answer(
         "Процесс создания заказа начат. Пожалуйста, выберите товар или используйте кнопку 'Создать заказ' в меню.",
         reply_markup=navigation_kb,

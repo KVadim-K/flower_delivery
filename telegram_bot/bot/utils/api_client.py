@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 # Загрузка переменных окружения
 API_URL = os.getenv('API_URL')
-ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')  # Добавляем загрузку ADMIN_API_TOKEN
+ADMIN_API_TOKEN = os.getenv('ADMIN_API_TOKEN')
 
 class APIClient:
     def __init__(self, token: str):
@@ -18,7 +18,6 @@ class APIClient:
     async def get_products(self):
         """
         Получает список доступных продуктов через API.
-        Предполагается наличие эндпоинта /products/api/list/
         """
         url = f"{API_URL}/products/api/list/"
         headers = {
@@ -111,7 +110,6 @@ class APIClient:
     async def get_user_orders(self):
         """
         Получает список заказов пользователя.
-        Предполагается наличие эндпоинта /orders/api/user_orders/
         """
         url = f"{API_URL}/orders/api/user_orders/"
         headers = {
@@ -136,7 +134,6 @@ class APIClient:
 async def get_user_api_token(telegram_id: int) -> str:
     """
     Функция для получения API-токена пользователя по его Telegram ID.
-    Предполагается наличие эндпоинта /users/api/get_token_by_telegram_id/?telegram_id=<id>
     """
     if not ADMIN_API_TOKEN:
         logger.error("ADMIN_API_TOKEN не установлен в переменных окружения.")
@@ -167,7 +164,6 @@ async def get_user_api_token(telegram_id: int) -> str:
 async def get_product_id_by_name(product_name: str) -> int:
     """
     Функция для получения ID продукта по его названию через API Django.
-    Предполагается наличие эндпоинта /products/api/search/?search=<name>
     """
     search_url = f"{API_URL}/products/api/search/?search={product_name}"
     logger = logging.getLogger(__name__)

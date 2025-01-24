@@ -121,8 +121,6 @@ async def confirm_order_callback(callback: CallbackQuery, state: FSMContext):
         await callback.answer()
         return
 
-    # Здесь можно добавить логику подтверждения заказа через API Django
-    # Например, отправить запрос на подтверждение заказа или обновление статуса
 
     await callback.message.edit_text(
         f"✅ Ваш заказ №{order_id} подтверждён.",

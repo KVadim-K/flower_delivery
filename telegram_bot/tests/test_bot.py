@@ -12,7 +12,7 @@ class TestStartCommand(TestCase):
             message = MagicMock()
             message.chat.id = 12345
             message.from_user.id = 12345
-            message.from_user.full_name = 'Test User'  # Задаем полное имя пользователя
+            message.from_user.full_name = 'Test User'
             message.text = '/start'
             message.answer = AsyncMock()
 
@@ -32,7 +32,7 @@ class TestStartCommand(TestCase):
             # Проверяем, что message.answer был вызван с правильными аргументами
             message.answer.assert_called_once_with(
                 expected_text,
-                reply_markup=ANY,  # Игнорируем детали reply_markup
+                reply_markup=ANY,
                 parse_mode='HTML'
             )
 

@@ -33,7 +33,7 @@ print(f"BOT_TOKEN: {BOT_TOKEN}")
 print(f"ADMIN_API_TOKEN: {ADMIN_API_TOKEN}")
 
 # Импорт роутеров и middleware
-from telegram_bot.bot.handlers.commands import router as commands_router  # Импортируем commands_router
+from telegram_bot.bot.handlers.commands import router as commands_router
 from telegram_bot.bot.handlers.orders import router as orders_router
 from telegram_bot.bot.handlers.callbacks import router as callbacks_router
 from telegram_bot.bot.middlewares.logging_middleware import LoggingMiddleware
@@ -57,10 +57,10 @@ async def main():
 
     # Регистрация middleware
     dp.message.middleware(LoggingMiddleware())
-    dp.callback_query.middleware(LoggingMiddleware())  # Добавляем middleware для callback
+    dp.callback_query.middleware(LoggingMiddleware())
 
     # Регистрация роутеров
-    dp.include_router(commands_router)  # Регистрируем commands_router
+    dp.include_router(commands_router)
     dp.include_router(orders_router)
     dp.include_router(callbacks_router)
 

@@ -38,10 +38,6 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "213.171.31.251",
-    "django_backend",
-    "api.ipify.org",
-    "example.com",
-    "bd5444d7cde5",
     "172.27.0.2",  # IP-адрес контейнера Django
     "172.27.0.6",
 ]
@@ -89,7 +85,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',  # Добавлено здесь
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -103,12 +99,12 @@ ROOT_URLCONF = 'flower_delivery.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Создайте папку templates в корне проекта
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',  # Необходимо для django-allauth
+                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -154,7 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'Europe/Moscow'  # Для московского времени
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -211,7 +207,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-EMAIL_USE_TLS = False  # Не включайте одновременно SSL и TLS
+EMAIL_USE_TLS = False  # Не включать одновременно SSL и TLS
 EMAIL_HOST_USER = 'd3liveryflower@yandex.ru'
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 
@@ -273,19 +269,19 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'admin_bot.log',
-            'encoding': 'utf-8',  # Добавлено для корректного отображения UTF-8
+            'encoding': 'utf-8',
         },
         'telegram_bot_file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'telegram_bot.log',
-            'encoding': 'utf-8',  # Добавлено для корректного отображения UTF-8
+            'encoding': 'utf-8',
         },
         'error_file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'error.log',
-            'encoding': 'utf-8',  # Добавлено для корректного отображения UTF-8
+            'encoding': 'utf-8',
         },
     },
     'loggers': {

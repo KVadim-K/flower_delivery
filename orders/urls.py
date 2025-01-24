@@ -6,7 +6,7 @@ from .views import (
     UserOrdersAPIView,
     OrderStatusAPIView,
     OrderAnalyticsAPIView,
-    create_order,  # Функция для создания заказа (если используется)
+    create_order,
     order_history,
     reorder,
     update_cart,

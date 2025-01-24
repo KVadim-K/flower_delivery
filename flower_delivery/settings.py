@@ -78,8 +78,8 @@ INSTALLED_APPS = [
     'orders.apps.OrdersConfig',
     'reviews.apps.ReviewsConfig',
     'reports.apps.ReportsConfig',
-    'telegram_bot',  # Добавляем telegram_bot
-    'telegramadmin_bot',   # Новый админ-бот
+    'telegram_bot',
+    'telegramadmin_bot',
 ]
 
 MIDDLEWARE = [
@@ -235,7 +235,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/oauth/complete/g
 SOCIAL_AUTH_VK_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_KEY')
 SOCIAL_AUTH_VK_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_SECRET')
 SOCIAL_AUTH_VK_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/oauth/complete/vk-oauth2/'
-SOCIAL_AUTH_GITHUB_OAUTH2_REDIRECT_URI = "https://vakrest.ru/oauth/complete/github/"  # Установить на постпродакшне
+# SOCIAL_AUTH_GITHUB_OAUTH2_REDIRECT_URI = "https://vakrest.ru/oauth/complete/github/"  # Установить на постпродакшне
 
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET')

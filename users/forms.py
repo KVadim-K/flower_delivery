@@ -16,7 +16,7 @@ class RegistrationForm(UserCreationForm):
         })
     )
     phone = forms.CharField(
-        required=True,  # Сделаем обязательным, если необходимо
+        required=True,
         label='Номер телефона',
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -35,4 +35,3 @@ class RegistrationForm(UserCreationForm):
             raise forms.ValidationError('Пользователь с таким email уже существует.')
         return email
 
-    # Удаляем метод clean_telegram_id, так как поле отсутствует в форме

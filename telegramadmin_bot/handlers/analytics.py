@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from aiogram.types import BufferedInputFile
 import io
 import datetime
-import asyncio  # Импортируем asyncio
+import asyncio
 
 logger = logging.getLogger('telegramadmin_bot')
 
@@ -29,7 +29,6 @@ async def order_analytics(message: types.Message):
         return
 
     try:
-        # Убедимся, что команда вызывается только как /analytics без аргументов
         if not message.text or message.text.strip() != "/analytics":
             await message.reply("❗ **Некорректный формат команды. Используйте только:** `/analytics`")
             return
@@ -94,7 +93,6 @@ async def order_analytics(message: types.Message):
         else:
             buf = io.BytesIO()
 
-            # Предположим, что `orders_per_day` и `sales_per_day` уже содержат соответствующие данные
             days = [item['day'] for item in orders_per_day]
             order_counts = [item['count'] for item in orders_per_day]
             sales = [item['total_sales'] for item in sales_per_day]

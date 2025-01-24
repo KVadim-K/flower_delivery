@@ -12,4 +12,4 @@ class OrderStates(StatesGroup):
     waiting_for_phone_number = State()
     waiting_for_confirmation = State()
     active_order = State()  # Состояние для отслеживания активного заказа
-    # Добавьте другие состояния, если необходимо
+

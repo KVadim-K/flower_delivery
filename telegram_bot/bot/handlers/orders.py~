@@ -174,13 +174,22 @@ async def process_quantity(message: Message, state: FSMContext):
         await state.clear()
         return
 
+    # **Исправление:** Преобразуем цену продукта в число
+    try:
+        price = float(product['price'])
+    except ValueError:
+        logger.error(f"Не удалось преобразовать цену продукта в число: {product['price']}")
+        await message.answer("⚠️ Произошла ошибка с ценой продукта. Пожалуйста, попробуйте позже.")
+        await state.clear()
+        return
+
     # Добавляем товар в корзину (список выбранных товаров в состоянии)
     cart = user_data.get('cart', [])
     cart.append({
         'product_id': product['id'],
         'product_name': product['name'],
         'quantity': quantity,
-        'price': product['price']
+        'price': price  # Сохраняем цену как число
     })
     await state.update_data(cart=cart)
     logger.info(f"Пользователь {telegram_id} добавил '{quantity}' единиц продукта '{product['name']}' в корзину.")
@@ -262,10 +271,20 @@ async def proceed_to_checkout_callback(callback: CallbackQuery, state: FSMContex
     cart_text = "🛒 <b>Ваш заказ:</b>\n\n"
     total_price = 0
     for item in cart:
-        item_total = item['price'] * item['quantity']
-        total_price += item_total
-        cart_text += f"🌸 {item['product_name']} x {item['quantity']} = {item_total}₽\n"
-    cart_text += f"\n💰 <b>Общая стоимость: {total_price}₽</b>\n\n"
+        # **Исправление:** Убеждаемся, что цена и количество - числа
+        try:
+            item_price = float(item['price'])
+            item_quantity = int(item['quantity'])
+            item_total = item_price * item_quantity
+            total_price += item_total
+            cart_text += f"🌸 {item['product_name']} x {item_quantity} = {item_total:.2f}₽\n"
+        except ValueError as e:
+            logger.error(f"Ошибка при расчете стоимости товара: {e}")
+            await callback.message.edit_text("⚠️ Произошла ошибка при расчете стоимости заказа. Пожалуйста, попробуйте позже.")
+            await state.clear()
+            return
+
+    cart_text += f"\n💰 <b>Общая стоимость: {total_price:.2f}₽</b>\n\n"
     cart_text += "📍 Пожалуйста, введите адрес доставки:"
 
     await callback.message.edit_text(cart_text, parse_mode='HTML')
@@ -369,8 +388,8 @@ async def process_phone_number(message: Message, state: FSMContext):
     order_summary = "📋 **Пожалуйста, подтвердите ваш заказ:**\n\n"
     for item in cart:
         item_total = item['price'] * item['quantity']
-        order_summary += f"🌸 {item['product_name']} x {item['quantity']} = {item_total}₽\n"
-    order_summary += f"\n💰 **Общая стоимость:** {total_price}₽\n"
+        order_summary += f"🌸 {item['product_name']} x {item['quantity']} = {item_total:.2f}₽\n"
+    order_summary += f"\n💰 **Общая стоимость:** {total_price:.2f}₽\n"
     order_summary += f"\n📍 **Адрес доставки:** {address}, {city}, {postal_code}\n"
     order_summary += f"📱 **Телефон:** {phone_number}\n"
 
