@@ -23,7 +23,7 @@ class RegistrationForm(UserCreationForm):
             'placeholder': 'Введите номер телефона'
         })
     )
-    # Удаляем поле 'address'
+
 
     class Meta:
         model = User
