@@ -138,10 +138,10 @@ flower_delivery/
 
 ## 📸 Демонстрация
 
-### Платформа
+## Платформа
 ![Flower Delivery](FlowerDelivery.gif)
 
-### Боты
+## Боты
 ![Flower Delivery Bots](FlowerDeliveryBots.gif)
 
 ---
@@ -245,5 +245,7 @@ SOCIAL_AUTH_VK_OAUTH2_SECRET=ваш_vk_app_secret
 - [Официальный сайт Redis](https://redis.io/)  
 
 
-
+![GitHub last commit](https://img.shields.io/github/last-commit/KVadim-K/flower_delivery)
+![GitHub issues](https://img.shields.io/github/issues/KVadim-K/flower_delivery)
+![GitHub license](https://img.shields.io/github/license/KVadim-K/flower_delivery)
 
